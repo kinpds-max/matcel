@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>매트.타일 계산기 - 매트허브</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -139,7 +140,9 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
   </div>
   <div class="login-footer">
     © <span id="yearLogin"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
-    프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b>1660-1195</b>
+    프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b>1660-1195</b><br>
+    <a href="terms.html" style="color:#556;font-size:10px;margin:0 4px;">이용약관</a> |
+    <a href="privacy.html" style="color:#556;font-size:10px;margin:0 4px;">개인정보처리방침</a>
   </div>
 </div>
 
@@ -170,14 +173,14 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
         <li>이미지 캡쳐 & 카톡 공유</li>
         <li>업데이트 무료 제공</li>
       </ul>
-      <button class="pricing-cta primary" onclick="requestSubscription('monthly')">구독 문의하기</button>
+      <button class="pricing-cta primary" onclick="processPayment('monthly')">월 30,000원 결제하기</button>
     </div>
     <!-- 프로그램 구입 -->
     <div class="pricing-card">
       <div class="pricing-card-title">프로그램 구입</div>
       <div class="pricing-card-desc">1회 결제 · 영구 사용</div>
       <div class="pricing-price">
-        <span class="pricing-original">100만원</span><br>
+        <span class="pricing-original">1,000,000원</span><br>
         <span class="pricing-amount">50<span style="font-size:20px;">만원</span></span>
         <span class="pricing-period" style="color:#e74c3c;font-weight:700;">50% OFF</span>
       </div>
@@ -188,13 +191,28 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
         <li>커스터마이징 상담</li>
         <li>추가 비용 없음</li>
       </ul>
-      <button class="pricing-cta outline" onclick="requestSubscription('purchase')">구입 문의하기</button>
+      <button class="pricing-cta outline" onclick="processPayment('purchase')">500,000원 결제하기</button>
+    </div>
+    <!-- 약관 동의 -->
+    <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:16px;margin-top:4px;">
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="agreeTerms" style="margin-top:3px;width:18px;height:18px;accent-color:#2563eb;">
+        <span style="font-size:12px;color:#bbc;line-height:1.6;">
+          <a href="terms.html" target="_blank" style="color:#7eb8da;text-decoration:underline;">이용약관</a> 및
+          <a href="privacy.html" target="_blank" style="color:#7eb8da;text-decoration:underline;">개인정보처리방침</a>에 동의합니다.
+          <span style="color:#e74c3c;">(필수)</span>
+        </span>
+      </label>
     </div>
   </div>
   <div class="pricing-contact">
-    <p>구독 및 구입 문의<br><b style="font-size:18px;">📞 1660-1195</b><br><br>
-    문의 후 관리자가 계정을 활성화해 드립니다.<br>
-    로그인한 이메일로 신청해 주세요.</p>
+    <p>결제 관련 문의<br><b style="font-size:18px;">📞 1660-1195</b><br><br>
+    결제 완료 후 관리자가 계정을 활성화해 드립니다.<br>
+    <span style="font-size:11px;color:#667;">영업시간: 평일 09:00 ~ 18:00</span></p>
+  </div>
+  <div style="text-align:center;padding:10px 0;">
+    <a href="terms.html" target="_blank" style="color:#667;font-size:11px;margin:0 8px;text-decoration:none;">이용약관</a>
+    <a href="privacy.html" target="_blank" style="color:#667;font-size:11px;margin:0 8px;text-decoration:none;">개인정보처리방침</a>
   </div>
   <div class="pricing-logout">
     <span onclick="logout()">← 로그아웃</span>
@@ -266,6 +284,10 @@ var GOOGLE_CLIENT_ID = '1096297652635-3up3uc8k17dkj20q7c01ctrulb22lqec.apps.goog
 var NAVER_CLIENT_ID = 'YOUR_NAVER_CLIENT_ID';
 var NAVER_CALLBACK = window.location.origin + window.location.pathname;
 var USERS_URL = 'https://raw.githubusercontent.com/kinpds-max/matcel/main/users.json?t=' + Date.now();
+
+// ★ 포트원 Store ID를 발급받아 교체하세요
+var PORTONE_STORE_ID = 'YOUR_PORTONE_STORE_ID';
+var PORTONE_CHANNEL_KEY = 'YOUR_PORTONE_CHANNEL_KEY';
 
 var currentUser = null;
 var userPlan = null;
@@ -367,11 +389,58 @@ function logout() {
   showLogin();
 }
 
-/* 구독 문의 */
-function requestSubscription(plan) {
-  var planName = plan === 'monthly' ? '월 구독 (3만원/월)' : '프로그램 구입 (50만원)';
-  var email = currentUser && currentUser.email ? currentUser.email : '(이메일 없음)';
-  alert('[ ' + planName + ' 신청 ]\n\n📧 이메일: ' + email + '\n📞 전화 문의: 1660-1195\n\n위 번호로 연락주시면\n관리자가 계정을 활성화해 드립니다.');
+/* 결제 처리 (포트원) */
+async function processPayment(plan) {
+  if (!document.getElementById('agreeTerms').checked) {
+    alert('이용약관 및 개인정보처리방침에 동의해주세요.');
+    return;
+  }
+  if (!currentUser || !currentUser.email) {
+    alert('결제를 위해 Google 또는 네이버로 로그인해주세요.\n게스트 계정으로는 결제할 수 없습니다.');
+    return;
+  }
+
+  var planName = plan === 'monthly' ? '매트.타일 계산기 월구독' : '매트.타일 계산기 프로그램구입';
+  var amount = plan === 'monthly' ? 30000 : 500000;
+  var orderId = 'matcel_' + plan + '_' + Date.now();
+
+  if (PORTONE_STORE_ID.indexOf('YOUR_') === 0) {
+    alert('[ 결제 시스템 준비 중 ]\n\n' + planName + '\n금액: ' + amount.toLocaleString() + '원\n이메일: ' + currentUser.email + '\n\n📞 전화 문의: 1660-1195\n위 번호로 연락주시면 결제를 안내해 드립니다.');
+    return;
+  }
+
+  try {
+    var response = await PortOne.requestPayment({
+      storeId: PORTONE_STORE_ID,
+      channelKey: PORTONE_CHANNEL_KEY,
+      paymentId: orderId,
+      orderName: planName,
+      totalAmount: amount,
+      currency: 'KRW',
+      payMethod: 'CARD',
+      customer: {
+        fullName: currentUser.name,
+        email: currentUser.email
+      },
+      customData: {
+        plan: plan,
+        userEmail: currentUser.email
+      }
+    });
+
+    if (response.code) {
+      if (response.code === 'FAILURE_TYPE_PG') {
+        alert('결제가 취소되었습니다.');
+      } else {
+        alert('결제 오류: ' + (response.message || response.code));
+      }
+    } else {
+      alert('✅ 결제가 완료되었습니다!\n\n주문번호: ' + orderId + '\n\n관리자가 확인 후 계정을 활성화해 드립니다.\n보통 1시간 이내 처리됩니다.\n\n문의: 1660-1195');
+    }
+  } catch(e) {
+    alert('결제 처리 중 오류가 발생했습니다.\n다시 시도해주세요.\n\n문의: 1660-1195');
+    console.error(e);
+  }
 }
 
 /* 세션 복원 */
