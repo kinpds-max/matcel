@@ -11,71 +11,74 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 .admin-header h1{color:#fff;font-size:20px;font-weight:700;}
 .admin-header span{color:#7eb8da;font-size:12px;}
 .container{max-width:600px;margin:0 auto;padding:16px;}
-
-/* 로그인 */
-.auth-box{background:#fff;border-radius:12px;padding:24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-.auth-box label{font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:6px;}
-.auth-box input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;}
-.auth-box input:focus{outline:none;border-color:#2563eb;}
-.btn{width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.15s;}
-.btn:active{transform:scale(0.98);}
-.btn-primary{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;}
-.btn-danger{background:#e74c3c;color:#fff;padding:8px 14px;width:auto;font-size:12px;border-radius:6px;}
-.btn-success{background:#27ae60;color:#fff;}
-
-/* 패널 */
+.auth-box{background:#fff;border-radius:12px;padding:32px 24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
+.auth-box h2{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:20px;}
+.pw-wrap{display:flex;gap:8px;max-width:280px;margin:0 auto;}
+.pw-wrap input{flex:1;padding:14px;border:1.5px solid #ddd;border-radius:10px;font-size:18px;text-align:center;letter-spacing:8px;outline:none;}
+.pw-wrap input:focus{border-color:#2563eb;}
+.pw-wrap button{padding:14px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;font-size:15px;font-weight:700;cursor:pointer;}
+.pw-error{color:#e74c3c;font-size:13px;margin-top:12px;display:none;}
 .panel{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
 .panel-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #f0f0f0;}
 .stat-row{display:flex;gap:12px;margin-bottom:16px;}
 .stat-card{flex:1;background:#f8f8f5;border-radius:10px;padding:14px;text-align:center;}
 .stat-num{font-size:28px;font-weight:800;color:#1a1a2e;}
 .stat-label{font-size:11px;color:#888;margin-top:2px;}
-
-/* 추가 폼 */
-.add-form{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.add-form input{flex:1;min-width:0;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;}
-.add-form input:focus{outline:none;border-color:#2563eb;}
+.add-form{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+.add-form input{flex:1;min-width:0;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;}
+.add-form input:focus{border-color:#2563eb;}
 .add-form select{padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;background:#fff;}
-.add-form button{padding:10px 20px;border-radius:8px;border:none;background:#1a1a2e;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
-
-/* 유저 리스트 */
+.btn-add{width:100%;padding:12px;border-radius:8px;border:none;background:#27ae60;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-add:active{filter:brightness(0.9);}
+.btn-danger{padding:8px 14px;border-radius:6px;border:none;background:#e74c3c;color:#fff;font-size:12px;font-weight:600;cursor:pointer;}
 .user-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid #f0f0f0;gap:8px;}
 .user-item:last-child{border-bottom:none;}
 .user-email{font-size:13px;font-weight:600;color:#333;flex:1;word-break:break-all;}
 .user-plan{font-size:11px;padding:3px 8px;border-radius:12px;font-weight:600;white-space:nowrap;}
 .plan-monthly{background:#e8f4fd;color:#2563eb;}
 .plan-purchase{background:#fdf0ef;color:#e74c3c;}
-.user-date{font-size:10px;color:#999;white-space:nowrap;}
-.user-actions{display:flex;gap:6px;align-items:center;}
-
+.user-date{font-size:10px;color:#999;}
 .empty-msg{text-align:center;padding:32px;color:#aaa;font-size:14px;}
-.status-msg{padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px;text-align:center;}
+.status-msg{padding:10px;border-radius:8px;margin:8px 0;font-size:13px;text-align:center;}
 .status-success{background:#edfff4;color:#27ae60;}
 .status-error{background:#fdf0ef;color:#e74c3c;}
+.token-bar{background:#fff;border-radius:12px;padding:16px 20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.token-bar label{font-size:12px;font-weight:600;color:#888;display:block;margin-bottom:6px;}
+.token-bar input{width:100%;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:12px;outline:none;}
+.token-bar input:focus{border-color:#2563eb;}
+.token-bar p{font-size:11px;color:#aaa;margin-top:6px;}
 .hidden{display:none!important;}
-.logout-link{color:#7eb8da;font-size:12px;cursor:pointer;margin-top:8px;display:inline-block;}
+.logout-area{text-align:center;margin-top:16px;}
+.logout-area span{color:#2563eb;font-size:12px;cursor:pointer;}
 </style>
 </head>
 <body>
 
 <div class="admin-header">
   <span>MATHUB ADMIN</span>
-  <h1>매트허브 관리자 페이지</h1>
+  <h1>매트허브 관리자</h1>
 </div>
 
 <div class="container">
-  <!-- 인증 -->
+  <!-- 비밀번호 입력 -->
   <div id="authSection" class="auth-box">
-    <label>GitHub Personal Access Token</label>
-    <input type="password" id="tokenInput" placeholder="ghp_xxxxx...">
-    <label>관리자 비밀번호</label>
-    <input type="password" id="pwInput" placeholder="비밀번호 입력">
-    <button class="btn btn-primary" onclick="adminLogin()">관리자 로그인</button>
-    <div id="authMsg" class="status-msg hidden"></div>
+    <h2>🔐 관리자 인증</h2>
+    <div class="pw-wrap">
+      <input type="password" id="pwInput" placeholder="••••••" inputmode="numeric" maxlength="10">
+      <button onclick="adminLogin()">확인</button>
+    </div>
+    <div id="pwError" class="pw-error">비밀번호가 틀립니다.</div>
   </div>
 
   <!-- 대시보드 -->
   <div id="dashboard" class="hidden">
+    <!-- GitHub 토큰 (구독자 추가/삭제에 필요) -->
+    <div class="token-bar">
+      <label>GitHub Token (구독자 추가·삭제 시 필요)</label>
+      <input type="password" id="ghTokenInput" placeholder="ghp_xxxxx..." value="">
+      <p>구독자 조회는 토큰 없이 가능합니다</p>
+    </div>
+
     <div class="panel">
       <div class="panel-title">📊 현황</div>
       <div class="stat-row">
@@ -99,21 +102,21 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
       <div class="add-form">
         <input type="email" id="addEmail" placeholder="이메일 (Google 로그인 이메일)">
         <select id="addPlan">
-          <option value="monthly">월구독 3만원</option>
-          <option value="purchase">프로그램구입 50만원</option>
+          <option value="monthly">월구독</option>
+          <option value="purchase">프로그램구입</option>
         </select>
       </div>
-      <button class="btn btn-success" onclick="addUser()" style="margin-bottom:8px;">구독자 추가</button>
-      <div id="addMsg" class="status-msg hidden"></div>
+      <button class="btn-add" onclick="addUser()">구독자 추가</button>
+      <div id="addMsg"></div>
     </div>
 
     <div class="panel">
       <div class="panel-title">👥 구독자 목록</div>
-      <div id="userList"></div>
+      <div id="userList"><div class="empty-msg">로딩 중...</div></div>
     </div>
 
-    <div style="text-align:center;margin-top:16px;">
-      <span class="logout-link" onclick="adminLogout()">로그아웃</span>
+    <div class="logout-area">
+      <span onclick="adminLogout()">← 로그아웃</span>
     </div>
   </div>
 </div>
@@ -122,66 +125,62 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 var REPO_OWNER = 'kinpds-max';
 var REPO_NAME = 'matcel';
 var FILE_PATH = 'users.json';
-var ADMIN_PW = 'matcel2024!';
-
-var ghToken = '';
+var ADMIN_PW = '471500';
 var usersData = null;
 var fileSha = '';
 
+/* 비밀번호 입력 시 엔터키 */
+document.getElementById('pwInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') adminLogin();
+});
+
+/* 로그인 */
 function adminLogin() {
-  var token = document.getElementById('tokenInput').value.trim();
   var pw = document.getElementById('pwInput').value.trim();
-  var msg = document.getElementById('authMsg');
-
   if (pw !== ADMIN_PW) {
-    msg.className = 'status-msg status-error'; msg.textContent = '비밀번호가 틀립니다.';
-    msg.classList.remove('hidden'); return;
+    document.getElementById('pwError').style.display = 'block';
+    return;
   }
-  if (!token.startsWith('ghp_')) {
-    msg.className = 'status-msg status-error'; msg.textContent = 'GitHub 토큰을 입력해주세요.';
-    msg.classList.remove('hidden'); return;
-  }
-
-  ghToken = token;
-  msg.className = 'status-msg'; msg.textContent = '로딩 중...';
-  msg.classList.remove('hidden');
-  loadUsers();
+  document.getElementById('authSection').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  loadUsersPublic();
 }
 
 function adminLogout() {
-  ghToken = '';
   document.getElementById('authSection').classList.remove('hidden');
   document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('tokenInput').value = '';
   document.getElementById('pwInput').value = '';
+  document.getElementById('pwError').style.display = 'none';
 }
 
-async function loadUsers() {
+/* 구독자 조회 (토큰 불필요 - public raw) */
+async function loadUsersPublic() {
   try {
-    var res = await fetch('https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH, {
-      headers: { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.v3+json' }
-    });
-    if (!res.ok) throw new Error('GitHub 접근 실패 (' + res.status + ')');
-    var data = await res.json();
-    fileSha = data.sha;
-    usersData = JSON.parse(atob(data.content.replace(/\n/g, '')));
-
-    document.getElementById('authSection').classList.add('hidden');
-    document.getElementById('dashboard').classList.remove('hidden');
+    var res = await fetch('https://raw.githubusercontent.com/' + REPO_OWNER + '/' + REPO_NAME + '/main/' + FILE_PATH + '?t=' + Date.now());
+    if (!res.ok) throw new Error('파일 로드 실패');
+    usersData = await res.json();
     renderDashboard();
   } catch(e) {
-    var msg = document.getElementById('authMsg');
-    msg.className = 'status-msg status-error';
-    msg.textContent = '오류: ' + e.message;
-    msg.classList.remove('hidden');
+    document.getElementById('userList').innerHTML = '<div class="empty-msg">데이터 로드 실패: ' + e.message + '</div>';
   }
 }
 
-async function saveUsers() {
+/* GitHub API로 SHA 가져오기 */
+async function getFileSha(token) {
+  var res = await fetch('https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH, {
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error('GitHub 인증 실패. 토큰을 확인해주세요.');
+  var data = await res.json();
+  fileSha = data.sha;
+}
+
+/* 저장 */
+async function saveUsers(token) {
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(usersData, null, 2))));
   var res = await fetch('https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH, {
     method: 'PUT',
-    headers: { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
     body: JSON.stringify({ message: '구독자 업데이트', content: content, sha: fileSha })
   });
   if (!res.ok) throw new Error('저장 실패');
@@ -189,25 +188,25 @@ async function saveUsers() {
   fileSha = result.content.sha;
 }
 
+function getToken() {
+  var t = document.getElementById('ghTokenInput').value.trim();
+  if (!t || !t.startsWith('ghp_')) { alert('GitHub Token을 입력해주세요.\nghp_ 로 시작하는 토큰이 필요합니다.'); return null; }
+  return t;
+}
+
+/* 대시보드 렌더 */
 function renderDashboard() {
   var subs = usersData.subscribers || [];
-  var monthly = subs.filter(function(u) { return u.plan === 'monthly'; }).length;
-  var purchase = subs.filter(function(u) { return u.plan === 'purchase'; }).length;
-
   document.getElementById('statTotal').textContent = subs.length;
-  document.getElementById('statMonthly').textContent = monthly;
-  document.getElementById('statPurchase').textContent = purchase;
+  document.getElementById('statMonthly').textContent = subs.filter(function(u) { return u.plan === 'monthly'; }).length;
+  document.getElementById('statPurchase').textContent = subs.filter(function(u) { return u.plan === 'purchase'; }).length;
 
   var list = document.getElementById('userList');
-  if (subs.length === 0) {
-    list.innerHTML = '<div class="empty-msg">등록된 구독자가 없습니다</div>';
-    return;
-  }
+  if (subs.length === 0) { list.innerHTML = '<div class="empty-msg">등록된 구독자가 없습니다</div>'; return; }
 
   list.innerHTML = '';
   subs.forEach(function(user, idx) {
-    var item = document.createElement('div');
-    item.className = 'user-item';
+    var item = document.createElement('div'); item.className = 'user-item';
     var planLabel = user.plan === 'monthly' ? '월구독' : '프로그램구입';
     var planClass = user.plan === 'monthly' ? 'plan-monthly' : 'plan-purchase';
     item.innerHTML =
@@ -216,52 +215,51 @@ function renderDashboard() {
         '<div class="user-date">등록: ' + (user.date || '-') + '</div>' +
       '</div>' +
       '<span class="user-plan ' + planClass + '">' + planLabel + '</span>' +
-      '<button class="btn btn-danger" onclick="removeUser(' + idx + ')">삭제</button>';
+      '<button class="btn-danger" onclick="removeUser(' + idx + ')">삭제</button>';
     list.appendChild(item);
   });
 }
 
+/* 추가 */
 async function addUser() {
+  var token = getToken(); if (!token) return;
   var email = document.getElementById('addEmail').value.trim().toLowerCase();
   var plan = document.getElementById('addPlan').value;
   var msg = document.getElementById('addMsg');
 
-  if (!email || !email.includes('@')) {
-    msg.className = 'status-msg status-error'; msg.textContent = '올바른 이메일을 입력해주세요.';
-    msg.classList.remove('hidden'); return;
-  }
+  if (!email || !email.includes('@')) { msg.innerHTML = '<div class="status-msg status-error">올바른 이메일을 입력해주세요.</div>'; return; }
+  if (usersData.subscribers.some(function(u) { return u.email === email; })) { msg.innerHTML = '<div class="status-msg status-error">이미 등록된 이메일입니다.</div>'; return; }
 
-  var exists = usersData.subscribers.some(function(u) { return u.email === email; });
-  if (exists) {
-    msg.className = 'status-msg status-error'; msg.textContent = '이미 등록된 이메일입니다.';
-    msg.classList.remove('hidden'); return;
-  }
-
-  var today = new Date().toISOString().split('T')[0];
-  usersData.subscribers.push({ email: email, plan: plan, date: today });
+  usersData.subscribers.push({ email: email, plan: plan, date: new Date().toISOString().split('T')[0] });
 
   try {
-    msg.className = 'status-msg'; msg.textContent = '저장 중...'; msg.classList.remove('hidden');
-    await saveUsers();
-    msg.className = 'status-msg status-success'; msg.textContent = '✅ ' + email + ' 추가 완료!';
+    msg.innerHTML = '<div class="status-msg">저장 중...</div>';
+    await getFileSha(token);
+    await saveUsers(token);
+    msg.innerHTML = '<div class="status-msg status-success">✅ ' + email + ' 추가 완료!</div>';
     document.getElementById('addEmail').value = '';
     renderDashboard();
   } catch(e) {
-    msg.className = 'status-msg status-error'; msg.textContent = '저장 실패: ' + e.message;
+    usersData.subscribers.pop();
+    msg.innerHTML = '<div class="status-msg status-error">오류: ' + e.message + '</div>';
   }
 }
 
+/* 삭제 */
 async function removeUser(idx) {
+  var token = getToken(); if (!token) return;
   var user = usersData.subscribers[idx];
   if (!confirm(user.email + ' 구독을 삭제하시겠습니까?')) return;
 
-  usersData.subscribers.splice(idx, 1);
+  var removed = usersData.subscribers.splice(idx, 1)[0];
   try {
-    await saveUsers();
+    await getFileSha(token);
+    await saveUsers(token);
     renderDashboard();
   } catch(e) {
+    usersData.subscribers.splice(idx, 0, removed);
     alert('삭제 실패: ' + e.message);
-    await loadUsers();
+    renderDashboard();
   }
 }
 </script>
