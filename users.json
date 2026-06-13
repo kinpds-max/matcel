@@ -1,4 +1,10 @@
 {
   "admin_emails": ["matcel@admin.com"],
-  "subscribers": []
+  "subscribers": [
+    {
+      "email": "one19119@naver.com",
+      "plan": "purchase",
+      "date": "2026-06-14"
+    }
+  ]
 }
