@@ -1,0 +1,14 @@
+{
+  "name": "matcel",
+  "version": "1.0.0",
+  "description": "매트허브 타일계산기",
+  "scripts": {
+    "start": "npx serve public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kinpds-max/matcel.git"
+  },
+  "author": "하스놀 주식회사",
+  "license": "ISC"
+}
