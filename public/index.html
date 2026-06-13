@@ -7,231 +7,207 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: #f5f5f0;
-  min-height: 100vh;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;min-height:100vh;}
 
-/* ── 로그인 화면 ── */
-.login-screen {
-  min-height: 100vh;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-  padding: 20px;
-}
-.login-logo { font-size: 13px; color: #7eb8da; letter-spacing: 3px; font-weight: 500; margin-bottom: 6px; }
-.login-title { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
-.login-sub { font-size: 13px; color: #8899aa; margin-bottom: 40px; }
-.login-box {
-  background: #fff; border-radius: 16px; padding: 32px 24px;
-  width: 100%; max-width: 360px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-.login-box-title { font-size: 15px; font-weight: 700; color: #1a1a2e; text-align: center; margin-bottom: 24px; }
-.login-btn {
-  width: 100%; padding: 14px 16px; border-radius: 10px; border: 1.5px solid #ddd;
-  background: #fff; cursor: pointer; display: flex; align-items: center;
-  gap: 12px; font-size: 15px; font-weight: 600; color: #333;
-  transition: all 0.15s; margin-bottom: 12px;
-}
-.login-btn:active { transform: scale(0.98); }
-.login-btn:hover { border-color: #aaa; background: #fafafa; }
-.login-btn img { width: 24px; height: 24px; }
-.login-btn.google { border-color: #4285f4; }
-.login-btn.google:hover { background: #f0f4ff; }
-.login-btn.naver { border-color: #03c75a; }
-.login-btn.naver:hover { background: #edfff4; }
-.login-divider {
-  display: flex; align-items: center; gap: 12px;
-  margin: 16px 0; color: #bbb; font-size: 12px;
-}
-.login-divider::before, .login-divider::after {
-  content: ''; flex: 1; height: 1px; background: #e0e0e0;
-}
-.login-guest {
-  width: 100%; padding: 12px; border-radius: 10px; border: 1px dashed #ccc;
-  background: transparent; color: #999; font-size: 13px; font-weight: 500;
-  cursor: pointer; text-align: center;
-}
-.login-guest:hover { color: #666; border-color: #aaa; }
-.login-footer { margin-top: 24px; font-size: 11px; color: #556; text-align: center; line-height: 1.6; }
+/* ── 로그인 ── */
+.login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:20px;}
+.login-logo{font-size:13px;color:#7eb8da;letter-spacing:3px;font-weight:500;margin-bottom:6px;}
+.login-title{font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;}
+.login-sub{font-size:13px;color:#8899aa;margin-bottom:40px;}
+.login-box{background:#fff;border-radius:16px;padding:32px 24px;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.login-box-title{font-size:15px;font-weight:700;color:#1a1a2e;text-align:center;margin-bottom:24px;}
+.login-btn{width:100%;padding:14px 16px;border-radius:10px;border:1.5px solid #ddd;background:#fff;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600;color:#333;transition:all 0.15s;margin-bottom:12px;}
+.login-btn:active{transform:scale(0.98);}
+.login-btn.naver{border-color:#03c75a;}
+.login-btn.naver:hover{background:#edfff4;}
+.login-divider{display:flex;align-items:center;gap:12px;margin:16px 0;color:#bbb;font-size:12px;}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:#e0e0e0;}
+.login-guest{width:100%;padding:12px;border-radius:10px;border:1px dashed #ccc;background:transparent;color:#999;font-size:13px;font-weight:500;cursor:pointer;text-align:center;}
+.login-guest:hover{color:#666;border-color:#aaa;}
+.login-footer{margin-top:24px;font-size:11px;color:#556;text-align:center;line-height:1.6;}
+.login-footer b{color:#7eb8da;}
 
-/* ── 앱 상단 유저바 ── */
-.user-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 16px; background: #fff; border-bottom: 1px solid #eee;
-}
-.user-info { display: flex; align-items: center; gap: 8px; }
-.user-avatar {
-  width: 28px; height: 28px; border-radius: 50%;
-  background: #1a1a2e; color: #fff; font-size: 12px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-}
-.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.user-name { font-size: 13px; color: #333; font-weight: 500; }
-.user-provider { font-size: 10px; color: #999; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
-.logout-btn {
-  padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd;
-  background: #fff; color: #888; font-size: 11px; cursor: pointer;
-}
-.logout-btn:hover { background: #f5f5f5; }
+/* ── 요금제 ── */
+.pricing-screen{min-height:100vh;background:linear-gradient(160deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);padding:20px 16px;}
+.pricing-top{text-align:center;padding:20px 0 30px;}
+.pricing-top-logo{font-size:12px;color:#7eb8da;letter-spacing:3px;margin-bottom:4px;}
+.pricing-top-title{font-size:22px;font-weight:800;color:#fff;}
+.pricing-top-sub{font-size:13px;color:#8899aa;margin-top:6px;}
+.pricing-user{text-align:center;margin-bottom:24px;}
+.pricing-user span{background:rgba(255,255,255,0.1);padding:6px 14px;border-radius:20px;font-size:12px;color:#aab;}
+.pricing-cards{max-width:400px;margin:0 auto;}
+.pricing-card{background:#fff;border-radius:16px;padding:28px 24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.pricing-card.featured{border:2px solid #2563eb;}
+.pricing-badge{position:absolute;top:14px;right:14px;background:#2563eb;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:12px;}
+.pricing-card-title{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:4px;}
+.pricing-card-desc{font-size:12px;color:#888;margin-bottom:16px;}
+.pricing-price{margin-bottom:16px;}
+.pricing-original{font-size:14px;color:#bbb;text-decoration:line-through;}
+.pricing-amount{font-size:36px;font-weight:800;color:#1a1a2e;}
+.pricing-period{font-size:14px;color:#888;font-weight:500;}
+.pricing-features{list-style:none;margin-bottom:20px;}
+.pricing-features li{font-size:13px;color:#555;padding:6px 0;padding-left:22px;position:relative;}
+.pricing-features li::before{content:'✓';position:absolute;left:0;color:#27ae60;font-weight:700;}
+.pricing-cta{width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;cursor:pointer;text-align:center;}
+.pricing-cta.primary{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;}
+.pricing-cta.outline{background:#fff;border:1.5px solid #1a1a2e;color:#1a1a2e;}
+.pricing-contact{text-align:center;margin-top:24px;padding:20px;}
+.pricing-contact p{font-size:12px;color:#8899aa;line-height:1.6;}
+.pricing-contact b{color:#fff;}
+.pricing-contact a{color:#7eb8da;text-decoration:none;}
+.pricing-logout{text-align:center;margin-top:12px;}
+.pricing-logout span{color:#7eb8da;font-size:12px;cursor:pointer;}
 
-/* ── 앱 본문 ── */
-.capture-area { background: #fff; padding-bottom: 20px; }
-.header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 24px 20px; text-align: center;
-}
-.header-sub { font-size: 13px; color: #7eb8da; letter-spacing: 3px; margin-bottom: 4px; font-weight: 500; }
-.header-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; }
-.header-desc { font-size: 12px; color: #8899aa; margin-top: 4px; }
-.section { padding: 20px 16px 0; }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.section-title { font-size: 14px; font-weight: 700; color: #1a1a2e; }
-.lock-btn {
-  display: flex; align-items: center; gap: 5px;
-  padding: 5px 12px; border-radius: 20px;
-  border: 1.5px solid #bbb; background: #fff; color: #666;
-  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-}
-.lock-btn.locked { border-color: #e74c3c; background: #fdf0ef; color: #e74c3c; }
-.hint { font-size: 11px; color: #2563eb; margin-bottom: 10px; font-weight: 500; }
-.hint.locked { color: #e74c3c; }
-.tile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.tile-btn {
-  padding: 12px 0; border-radius: 10px;
-  border: 1.5px solid #ddd; background: #fff; color: #333;
-  font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.15s;
-}
-.tile-btn.active {
-  border: 2px solid #1a1a2e;
-  background: linear-gradient(135deg, #1a1a2e, #16213e);
-  color: #fff; font-weight: 700;
-}
-.tile-btn.disabled { opacity: 0.35; cursor: not-allowed; }
-.tile-btn .unit { font-size: 10px; opacity: 0.7; margin-left: 2px; }
-.table-info { font-size: 11px; color: #888; margin-bottom: 12px; }
-.table-header {
-  display: grid;
-  grid-template-columns: 62px 1fr 1fr 42px 42px 50px 28px;
-  gap: 4px; padding: 8px 4px;
-  background: #1a1a2e; border-radius: 10px 10px 0 0;
-  color: #fff; font-size: 11px; font-weight: 600; text-align: center;
-  align-items: center;
-}
-.table-row {
-  display: grid;
-  grid-template-columns: 62px 1fr 1fr 42px 42px 50px 28px;
-  gap: 4px; padding: 6px 4px;
-  border-left: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
-  border-bottom: 1px solid #eee;
-  align-items: center;
-}
-.table-row:nth-child(even) { background: #f9f9f7; }
-.table-row:nth-child(odd) { background: #fff; }
-.row-input {
-  width: 100%; padding: 7px 4px;
-  border: 1px solid #ddd; border-radius: 6px;
-  font-size: 13px; text-align: center; background: #fff;
-  outline: none; color: #333;
-}
-.row-input:focus { border-color: #2563eb; }
-.row-input.label { font-size: 12px; }
-.row-val { font-size: 13px; font-weight: 600; text-align: center; color: #1a1a2e; }
-.row-val.empty { color: #ccc; }
-.row-total { font-size: 14px; font-weight: 700; text-align: center; color: #2563eb; }
-.row-total.empty { color: #ccc; }
-.remove-btn {
-  width: 24px; height: 24px; border-radius: 50%; border: none;
-  background: #fee; color: #e74c3c;
-  font-size: 14px; font-weight: 700; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; line-height: 1;
-}
-.remove-btn.disabled { background: #eee; color: #ccc; cursor: default; }
-.add-row-btn {
-  width: 100%; padding: 10px;
-  border: 1px dashed #bbb; border-top: none;
-  background: #fafafa; color: #666;
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  border-radius: 0 0 10px 10px;
-}
-.add-row-btn:active { background: #f0f0f0; }
-.table-bottom-cap {
-  border-radius: 0 0 10px 10px;
-  border-bottom: 1px solid #e0e0e0;
-  border-left: 1px solid #e0e0e0;
-  border-right: 1px solid #e0e0e0;
-  height: 4px;
-}
-.grand-total {
-  margin-top: 16px; padding: 16px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  border-radius: 12px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.gt-label-sub { font-size: 11px; color: #7eb8da; font-weight: 500; margin-bottom: 2px; }
-.gt-label { font-size: 15px; color: #fff; font-weight: 700; }
-.gt-number { font-size: 32px; font-weight: 800; color: #fff; }
-.gt-unit { font-size: 14px; font-weight: 500; margin-left: 4px; opacity: 0.7; }
-.disclaimer {
-  margin-top: 14px; padding: 12px 14px;
-  background: #f9f6ef; border-radius: 8px;
-  border-left: 3px solid #d4a847;
-  font-size: 11px; color: #8a7440; line-height: 1.65;
-}
-.footer { margin-top: 14px; text-align: center; font-size: 11px; color: #aaa; line-height: 1.8; }
-.footer b { color: #1a1a2e; }
-.share-area { padding: 16px 16px 32px; }
-.share-btn {
-  width: 100%; padding: 16px; border-radius: 12px; border: none;
-  background: linear-gradient(135deg, #fee500 0%, #f5d800 100%);
-  color: #1a1a1a; font-size: 16px; font-weight: 700; cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.share-btn:active { filter: brightness(0.95); }
-.share-btn:disabled { background: #ccc; cursor: wait; }
-.share-hint { text-align: center; font-size: 11px; color: #999; margin-top: 8px; }
-.hidden { display: none !important; }
+/* ── 유저바 ── */
+.user-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #eee;}
+.user-info{display:flex;align-items:center;gap:8px;}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:#1a1a2e;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-name{font-size:13px;color:#333;font-weight:500;}
+.user-plan-badge{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600;}
+.badge-monthly{background:#e8f4fd;color:#2563eb;}
+.badge-purchase{background:#fdf0ef;color:#e74c3c;}
+.logout-btn{padding:6px 12px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#888;font-size:11px;cursor:pointer;}
+
+/* ── 계산기 ── */
+.capture-area{background:#fff;padding-bottom:20px;}
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);padding:24px 20px;text-align:center;}
+.header-sub{font-size:13px;color:#7eb8da;letter-spacing:3px;margin-bottom:4px;font-weight:500;}
+.header-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;}
+.header-desc{font-size:12px;color:#8899aa;margin-top:4px;}
+.section{padding:20px 16px 0;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.section-title{font-size:14px;font-weight:700;color:#1a1a2e;}
+.lock-btn{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;border:1.5px solid #bbb;background:#fff;color:#666;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.lock-btn.locked{border-color:#e74c3c;background:#fdf0ef;color:#e74c3c;}
+.hint{font-size:11px;color:#2563eb;margin-bottom:10px;font-weight:500;}
+.hint.locked{color:#e74c3c;}
+.tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tile-btn{padding:12px 0;border-radius:10px;border:1.5px solid #ddd;background:#fff;color:#333;font-size:16px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.tile-btn.active{border:2px solid #1a1a2e;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;font-weight:700;}
+.tile-btn.disabled{opacity:0.35;cursor:not-allowed;}
+.tile-btn .unit{font-size:10px;opacity:0.7;margin-left:2px;}
+.table-info{font-size:11px;color:#888;margin-bottom:12px;}
+.table-header{display:grid;grid-template-columns:62px 1fr 1fr 42px 42px 50px 28px;gap:4px;padding:8px 4px;background:#1a1a2e;border-radius:10px 10px 0 0;color:#fff;font-size:11px;font-weight:600;text-align:center;align-items:center;}
+.table-row{display:grid;grid-template-columns:62px 1fr 1fr 42px 42px 50px 28px;gap:4px;padding:6px 4px;border-left:1px solid #e0e0e0;border-right:1px solid #e0e0e0;border-bottom:1px solid #eee;align-items:center;}
+.table-row:nth-child(even){background:#f9f9f7;}
+.table-row:nth-child(odd){background:#fff;}
+.row-input{width:100%;padding:7px 4px;border:1px solid #ddd;border-radius:6px;font-size:13px;text-align:center;background:#fff;outline:none;color:#333;}
+.row-input:focus{border-color:#2563eb;}
+.row-input.label{font-size:12px;}
+.row-val{font-size:13px;font-weight:600;text-align:center;color:#1a1a2e;}
+.row-val.empty{color:#ccc;}
+.row-total{font-size:14px;font-weight:700;text-align:center;color:#2563eb;}
+.row-total.empty{color:#ccc;}
+.remove-btn{width:24px;height:24px;border-radius:50%;border:none;background:#fee;color:#e74c3c;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.remove-btn.disabled{background:#eee;color:#ccc;cursor:default;}
+.add-row-btn{width:100%;padding:10px;border:1px dashed #bbb;border-top:none;background:#fafafa;color:#666;font-size:13px;font-weight:600;cursor:pointer;border-radius:0 0 10px 10px;}
+.table-bottom-cap{border-radius:0 0 10px 10px;border-bottom:1px solid #e0e0e0;border-left:1px solid #e0e0e0;border-right:1px solid #e0e0e0;height:4px;}
+.grand-total{margin-top:16px;padding:16px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);border-radius:12px;display:flex;justify-content:space-between;align-items:center;}
+.gt-label-sub{font-size:11px;color:#7eb8da;font-weight:500;margin-bottom:2px;}
+.gt-label{font-size:15px;color:#fff;font-weight:700;}
+.gt-number{font-size:32px;font-weight:800;color:#fff;}
+.gt-unit{font-size:14px;font-weight:500;margin-left:4px;opacity:0.7;}
+.disclaimer{margin-top:14px;padding:12px 14px;background:#f9f6ef;border-radius:8px;border-left:3px solid #d4a847;font-size:11px;color:#8a7440;line-height:1.65;}
+.footer{margin-top:14px;text-align:center;font-size:11px;color:#aaa;line-height:1.8;}
+.footer b{color:#1a1a2e;}
+.share-area{padding:16px 16px 32px;}
+.share-btn{width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#fee500 0%,#f5d800 100%);color:#1a1a1a;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.share-btn:active{filter:brightness(0.95);}
+.share-btn:disabled{background:#ccc;cursor:wait;}
+.share-hint{text-align:center;font-size:11px;color:#999;margin-top:8px;}
+.hidden{display:none!important;}
 </style>
 </head>
 <body>
 
-<!-- ══════ 로그인 화면 ══════ -->
+<!-- ══════ 1. 로그인 ══════ -->
 <div id="loginScreen" class="login-screen">
   <div class="login-logo">MATHUB</div>
   <div class="login-title">매트.타일 계산기</div>
   <div class="login-sub">안전매트 수량 산출 도구</div>
   <div class="login-box">
     <div class="login-box-title">로그인하고 시작하기</div>
-    <div id="googleBtnContainer" style="display:flex;justify-content:center;min-height:44px;"></div>
+    <div id="googleBtnContainer" style="display:flex;justify-content:center;min-height:44px;margin-bottom:12px;"></div>
     <button class="login-btn naver" onclick="naverLogin()">
       <svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="#03C75A"/><path d="M8 7h2.8l3.2 4.8V7H16v10h-2.8L10 12.2V17H8V7z" fill="#fff"/></svg>
       네이버 로그인
     </button>
     <div class="login-divider">또는</div>
-    <button class="login-guest" onclick="guestLogin()">게스트로 둘러보기</button>
+    <button class="login-guest" onclick="guestLogin()">게스트로 둘러보기 (요금제 안내)</button>
   </div>
   <div class="login-footer">
     © <span id="yearLogin"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
-    프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b style="color:#7eb8da;">1660-1195</b>
+    프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b>1660-1195</b>
   </div>
 </div>
 
-<!-- ══════ 앱 화면 ══════ -->
-<div id="appScreen" class="hidden">
+<!-- ══════ 2. 요금제 안내 ══════ -->
+<div id="pricingScreen" class="pricing-screen hidden">
+  <div class="pricing-top">
+    <div class="pricing-top-logo">MATHUB</div>
+    <div class="pricing-top-title">매트.타일 계산기</div>
+    <div class="pricing-top-sub">비즈니스에 최적화된 수량 산출 도구</div>
+  </div>
+  <div class="pricing-user">
+    <span id="pricingUserInfo">로그인 정보</span>
+  </div>
+  <div class="pricing-cards">
+    <!-- 월구독 -->
+    <div class="pricing-card featured">
+      <div class="pricing-badge">인기</div>
+      <div class="pricing-card-title">월 구독</div>
+      <div class="pricing-card-desc">매월 자동 갱신 · 언제든 해지 가능</div>
+      <div class="pricing-price">
+        <span class="pricing-amount">3<span style="font-size:20px;">만원</span></span>
+        <span class="pricing-period">/ 월</span>
+      </div>
+      <ul class="pricing-features">
+        <li>매트·타일 수량 자동 계산</li>
+        <li>무제한 공간 추가</li>
+        <li>규격 자유 전환 비교</li>
+        <li>이미지 캡쳐 & 카톡 공유</li>
+        <li>업데이트 무료 제공</li>
+      </ul>
+      <button class="pricing-cta primary" onclick="requestSubscription('monthly')">구독 문의하기</button>
+    </div>
+    <!-- 프로그램 구입 -->
+    <div class="pricing-card">
+      <div class="pricing-card-title">프로그램 구입</div>
+      <div class="pricing-card-desc">1회 결제 · 영구 사용</div>
+      <div class="pricing-price">
+        <span class="pricing-original">100만원</span><br>
+        <span class="pricing-amount">50<span style="font-size:20px;">만원</span></span>
+        <span class="pricing-period" style="color:#e74c3c;font-weight:700;">50% OFF</span>
+      </div>
+      <ul class="pricing-features">
+        <li>월 구독 모든 기능 포함</li>
+        <li>영구 라이선스</li>
+        <li>우선 기술 지원</li>
+        <li>커스터마이징 상담</li>
+        <li>추가 비용 없음</li>
+      </ul>
+      <button class="pricing-cta outline" onclick="requestSubscription('purchase')">구입 문의하기</button>
+    </div>
+  </div>
+  <div class="pricing-contact">
+    <p>구독 및 구입 문의<br><b style="font-size:18px;">📞 1660-1195</b><br><br>
+    문의 후 관리자가 계정을 활성화해 드립니다.<br>
+    로그인한 이메일로 신청해 주세요.</p>
+  </div>
+  <div class="pricing-logout">
+    <span onclick="logout()">← 로그아웃</span>
+  </div>
+</div>
 
-  <!-- 유저바 -->
+<!-- ══════ 3. 계산기 앱 ══════ -->
+<div id="appScreen" class="hidden">
   <div class="user-bar">
     <div class="user-info">
       <div class="user-avatar" id="userAvatar">G</div>
       <span class="user-name" id="userName">게스트</span>
-      <span class="user-provider" id="userProvider">guest</span>
+      <span class="user-plan-badge" id="userPlanBadge"></span>
     </div>
     <button class="logout-btn" onclick="logout()">로그아웃</button>
   </div>
@@ -242,7 +218,6 @@ body {
       <h1 class="header-title">매트.타일 계산기</h1>
       <div class="header-desc">안전매트 수량 산출</div>
     </div>
-
     <div class="section">
       <div class="section-header">
         <span class="section-title">타일(매트) 규격 선택</span>
@@ -251,7 +226,6 @@ body {
       <div id="hint" class="hint">✓ 다른 규격을 눌러 바로 비교할 수 있습니다</div>
       <div class="tile-grid" id="tileGrid"></div>
     </div>
-
     <div class="section">
       <div class="section-title" style="margin-bottom:4px;">면적 입력 및 예상수량</div>
       <div class="table-info">가로·세로(mm) 입력 시 예상 매트 수(반올림)를 자동 계산합니다</div>
@@ -261,7 +235,6 @@ body {
       </div>
       <div id="tableBody"></div>
       <button id="addRowBtn" class="add-row-btn" onclick="addRow()">+ 공간 추가</button>
-
       <div class="grand-total">
         <div>
           <div class="gt-label-sub" id="gtSpec">선택 규격: 600mm × 600mm</div>
@@ -269,11 +242,9 @@ body {
         </div>
         <div class="gt-number"><span id="gtNumber">0</span><span class="gt-unit">장</span></div>
       </div>
-
       <div class="disclaimer">
         ⚠️ 본 계산 결과는 단순 수치상의 대략적인 수량이며, 가구 배치·실제 집안 환경·시공 여건에 따라 실 소요량은 달라질 수 있습니다. 실제 수량 카운터가 아닌 <b>참고용</b>으로만 활용해 주세요. 정확한 수량은 현장 실측 후 확인하시기 바랍니다.
       </div>
-
       <div class="footer">
         © <span id="year"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
         본 계산기의 저작권은 하스놀 주식회사에 있으며, 무단 복제 및 배포를 금합니다.<br>
@@ -281,7 +252,6 @@ body {
       </div>
     </div>
   </div>
-
   <div class="share-area">
     <button id="shareBtn" class="share-btn" onclick="captureAndShare()">
       <span style="font-size:20px;">💬</span> 이미지 캡쳐 후 카톡 공유
@@ -291,148 +261,136 @@ body {
 </div>
 
 <script>
-/* ══════════════════════════════
-   로그인 / 인증
-   ══════════════════════════════ */
-
-// ★ 아래 CLIENT ID를 발급받아 교체하세요
+/* ══════ CONFIG ══════ */
 var GOOGLE_CLIENT_ID = '1096297652635-3up3uc8k17dkj20q7c01ctrulb22lqec.apps.googleusercontent.com';
-var NAVER_CLIENT_ID  = 'YOUR_NAVER_CLIENT_ID';
-var NAVER_CALLBACK   = window.location.origin + window.location.pathname;
+var NAVER_CLIENT_ID = 'YOUR_NAVER_CLIENT_ID';
+var NAVER_CALLBACK = window.location.origin + window.location.pathname;
+var USERS_URL = 'https://raw.githubusercontent.com/kinpds-max/matcel/main/users.json?t=' + Date.now();
 
 var currentUser = null;
+var userPlan = null;
 
 document.getElementById('yearLogin').textContent = new Date().getFullYear();
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// 세션 복원
-(function restoreSession() {
+/* ══════ 구독 확인 ══════ */
+async function checkSubscription(email) {
   try {
-    var saved = sessionStorage.getItem('matcel_user');
-    if (saved) { currentUser = JSON.parse(saved); showApp(); }
-  } catch(e) {}
-
-  // 네이버 콜백 처리
-  var hash = window.location.hash;
-  if (hash && hash.indexOf('access_token') > -1) {
-    var params = {};
-    hash.replace('#','').split('&').forEach(function(p) {
-      var kv = p.split('=');
-      params[kv[0]] = decodeURIComponent(kv[1] || '');
-    });
-    if (params.access_token) {
-      currentUser = { name: '네이버 사용자', provider: 'naver', avatar: '' };
-      sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
-      window.location.hash = '';
-      showApp();
-    }
-  }
-})();
-
-/* Google 로그인 - 페이지 로드 시 버튼 렌더 */
-function initGoogleLogin() {
-  try {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse
-    });
-    google.accounts.id.renderButton(
-      document.getElementById('googleBtnContainer'),
-      { theme: 'outline', size: 'large', width: 312, text: 'signin_with', shape: 'rectangular', logo_alignment: 'left' }
-    );
-  } catch(e) { console.log('Google SDK 로딩 대기중...'); }
+    var res = await fetch(USERS_URL);
+    if (!res.ok) return null;
+    var data = await res.json();
+    var found = data.subscribers.find(function(u) { return u.email === email.toLowerCase(); });
+    return found ? found.plan : null;
+  } catch(e) { return null; }
 }
 
-// Google SDK 로드 후 초기화
-window.addEventListener('load', function() {
-  if (GOOGLE_CLIENT_ID.indexOf('YOUR_') !== 0) {
-    var checkGoogle = setInterval(function() {
-      if (window.google && google.accounts) {
-        clearInterval(checkGoogle);
-        initGoogleLogin();
-      }
-    }, 200);
-    setTimeout(function() { clearInterval(checkGoogle); }, 5000);
-  }
-});
-
-function handleGoogleResponse(response) {
-  try {
-    var payload = JSON.parse(atob(response.credential.split('.')[1]));
-    currentUser = {
-      name: payload.name || payload.email,
-      email: payload.email,
-      avatar: payload.picture || '',
-      provider: 'google'
-    };
-    sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
-    showApp();
-  } catch(e) { alert('Google 로그인 실패. 다시 시도해주세요.'); }
-}
-
-/* 네이버 로그인 */
-function naverLogin() {
-  if (NAVER_CLIENT_ID.indexOf('YOUR_') === 0) {
-    alert('Naver Client ID가 설정되지 않았습니다.\n관리자에게 문의하세요.\n\n게스트로 이용 가능합니다.');
-    return;
-  }
-  var state = Math.random().toString(36).substring(2);
-  var url = 'https://nid.naver.com/oauth2.0/authorize'
-    + '?response_type=token'
-    + '&client_id=' + NAVER_CLIENT_ID
-    + '&redirect_uri=' + encodeURIComponent(NAVER_CALLBACK)
-    + '&state=' + state;
-  window.location.href = url;
-}
-
-/* 게스트 */
-function guestLogin() {
-  currentUser = { name: '게스트', provider: 'guest', avatar: '' };
-  sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
-  showApp();
-}
-
-/* 로그아웃 */
-function logout() {
-  currentUser = null;
-  sessionStorage.removeItem('matcel_user');
+/* ══════ 화면 전환 ══════ */
+function showLogin() {
   document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('pricingScreen').classList.add('hidden');
   document.getElementById('appScreen').classList.add('hidden');
 }
-
-/* 앱 표시 */
+function showPricing() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('pricingScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
+  var info = currentUser ? (currentUser.name + ' (' + currentUser.email + ')') : '게스트';
+  document.getElementById('pricingUserInfo').textContent = '👤 ' + info;
+}
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('pricingScreen').classList.add('hidden');
   document.getElementById('appScreen').classList.remove('hidden');
 
   var avatarEl = document.getElementById('userAvatar');
-  var nameEl = document.getElementById('userName');
-  var provEl = document.getElementById('userProvider');
+  document.getElementById('userName').textContent = currentUser.name;
+  var badge = document.getElementById('userPlanBadge');
+  if (userPlan === 'monthly') { badge.textContent = '월구독'; badge.className = 'user-plan-badge badge-monthly'; }
+  else if (userPlan === 'purchase') { badge.textContent = '프로그램구입'; badge.className = 'user-plan-badge badge-purchase'; }
 
-  nameEl.textContent = currentUser.name;
-  var pLabel = { google: 'Google', naver: '네이버', guest: '게스트' };
-  provEl.textContent = pLabel[currentUser.provider] || currentUser.provider;
-
-  if (currentUser.avatar) {
-    avatarEl.innerHTML = '<img src="' + currentUser.avatar + '" alt="">';
-  } else {
-    avatarEl.textContent = (currentUser.name || 'G').charAt(0).toUpperCase();
-  }
+  if (currentUser.avatar) { avatarEl.innerHTML = '<img src="' + currentUser.avatar + '">'; }
+  else { avatarEl.textContent = (currentUser.name || 'U').charAt(0).toUpperCase(); }
 
   initCalculator();
 }
 
+/* ══════ 로그인 처리 ══════ */
+async function processLogin(user) {
+  currentUser = user;
+  sessionStorage.setItem('matcel_user', JSON.stringify(user));
 
-/* ══════════════════════════════
-   타일 계산기 (기존 로직)
-   ══════════════════════════════ */
+  if (user.email) {
+    userPlan = await checkSubscription(user.email);
+    if (userPlan) { showApp(); return; }
+  }
+  showPricing();
+}
 
-var TILE_SIZES = [500, 600, 700, 800, 1000, 1200];
-var selectedSize = 600;
-var locked = false;
-var rows = [];
-var nextId = 1;
-var calcInitialized = false;
+/* Google */
+function handleGoogleResponse(response) {
+  try {
+    var payload = JSON.parse(atob(response.credential.split('.')[1]));
+    processLogin({ name: payload.name || payload.email, email: payload.email, avatar: payload.picture || '', provider: 'google' });
+  } catch(e) { alert('Google 로그인 실패. 다시 시도해주세요.'); }
+}
+
+window.addEventListener('load', function() {
+  if (GOOGLE_CLIENT_ID.indexOf('YOUR_') !== 0) {
+    var check = setInterval(function() {
+      if (window.google && google.accounts) {
+        clearInterval(check);
+        google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleResponse });
+        google.accounts.id.renderButton(document.getElementById('googleBtnContainer'),
+          { theme: 'outline', size: 'large', width: 312, text: 'signin_with', shape: 'rectangular' });
+      }
+    }, 200);
+    setTimeout(function() { clearInterval(check); }, 5000);
+  }
+});
+
+/* 네이버 */
+function naverLogin() {
+  if (NAVER_CLIENT_ID.indexOf('YOUR_') === 0) {
+    alert('네이버 로그인은 준비 중입니다.\nGoogle 또는 게스트로 이용해주세요.'); return;
+  }
+  var state = Math.random().toString(36).substring(2);
+  window.location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=token&client_id=' + NAVER_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(NAVER_CALLBACK) + '&state=' + state;
+}
+
+/* 게스트 */
+function guestLogin() { processLogin({ name: '게스트', email: '', provider: 'guest', avatar: '' }); }
+
+/* 로그아웃 */
+function logout() {
+  currentUser = null; userPlan = null;
+  sessionStorage.removeItem('matcel_user');
+  showLogin();
+}
+
+/* 구독 문의 */
+function requestSubscription(plan) {
+  var planName = plan === 'monthly' ? '월 구독 (3만원/월)' : '프로그램 구입 (50만원)';
+  var email = currentUser && currentUser.email ? currentUser.email : '(이메일 없음)';
+  alert('[ ' + planName + ' 신청 ]\n\n📧 이메일: ' + email + '\n📞 전화 문의: 1660-1195\n\n위 번호로 연락주시면\n관리자가 계정을 활성화해 드립니다.');
+}
+
+/* 세션 복원 */
+(function() {
+  try {
+    var saved = sessionStorage.getItem('matcel_user');
+    if (saved) { processLogin(JSON.parse(saved)); }
+  } catch(e) {}
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('access_token') > -1) {
+    processLogin({ name: '네이버 사용자', email: '', provider: 'naver', avatar: '' });
+    window.location.hash = '';
+  }
+})();
+
+
+/* ══════ 계산기 ══════ */
+var TILE_SIZES = [500,600,700,800,1000,1200];
+var selectedSize = 600, locked = false, rows = [], nextId = 1, calcInitialized = false;
 
 function initCalculator() {
   if (calcInitialized) return;
@@ -442,165 +400,78 @@ function initCalculator() {
 }
 
 function renderTileGrid() {
-  var grid = document.getElementById('tileGrid');
-  grid.innerHTML = '';
+  var grid = document.getElementById('tileGrid'); grid.innerHTML = '';
   TILE_SIZES.forEach(function(size) {
     var btn = document.createElement('button');
     btn.className = 'tile-btn' + (selectedSize === size ? ' active' : '') + (locked && selectedSize !== size ? ' disabled' : '');
     btn.innerHTML = size + '<span class="unit">mm</span>';
     btn.disabled = locked && selectedSize !== size;
-    btn.onclick = function() {
-      if (locked && selectedSize !== size) return;
-      selectedSize = size;
-      renderTileGrid();
-      updateCalcOnly();
-    };
+    btn.onclick = function() { if (locked && selectedSize !== size) return; selectedSize = size; renderTileGrid(); updateCalcOnly(); };
     grid.appendChild(btn);
   });
 }
 
 function toggleLock() {
   locked = !locked;
-  var btn = document.getElementById('lockBtn');
-  var hint = document.getElementById('hint');
+  var btn = document.getElementById('lockBtn'), hint = document.getElementById('hint');
   btn.className = 'lock-btn' + (locked ? ' locked' : '');
   btn.innerHTML = locked ? '🔒 고정됨' : '🔓 고정하기';
   hint.className = 'hint' + (locked ? ' locked' : '');
-  hint.textContent = locked
-    ? '규격이 고정되어 있습니다. 해제 후 다른 규격을 선택하세요.'
-    : '✓ 다른 규격을 눌러 바로 비교할 수 있습니다';
+  hint.textContent = locked ? '규격이 고정되어 있습니다. 해제 후 다른 규격을 선택하세요.' : '✓ 다른 규격을 눌러 바로 비교할 수 있습니다';
   renderTileGrid();
 }
 
 function calcRow(row) {
-  var w = Number(row.width);
-  var h = Number(row.height);
+  var w = Number(row.width), h = Number(row.height);
   if (!selectedSize || !w || !h) return null;
-  var across = Math.round(w / selectedSize);
-  var down = Math.round(h / selectedSize);
-  return { across: across, down: down, total: across * down };
+  return { across: Math.round(w / selectedSize), down: Math.round(h / selectedSize), total: Math.round(w / selectedSize) * Math.round(h / selectedSize) };
 }
 
 function updateCalcOnly() {
-  document.getElementById('gtSpec').textContent =
-    selectedSize ? '선택 규격: ' + selectedSize + 'mm × ' + selectedSize + 'mm' : '선택 규격: 미선택';
-  var grandTotal = 0;
+  document.getElementById('gtSpec').textContent = selectedSize ? '선택 규격: ' + selectedSize + 'mm × ' + selectedSize + 'mm' : '선택 규격: 미선택';
+  var gt = 0;
   rows.forEach(function(row) {
-    var q = calcRow(row);
-    var acrossEl = document.getElementById('across-' + row.id);
-    var downEl   = document.getElementById('down-' + row.id);
-    var totalEl  = document.getElementById('total-' + row.id);
-    if (!acrossEl) return;
-    if (q) {
-      acrossEl.textContent = q.across;  acrossEl.className = 'row-val';
-      downEl.textContent = q.down;      downEl.className = 'row-val';
-      totalEl.textContent = q.total;    totalEl.className = 'row-total';
-      grandTotal += q.total;
-    } else {
-      acrossEl.textContent = '-'; acrossEl.className = 'row-val empty';
-      downEl.textContent = '-';   downEl.className = 'row-val empty';
-      totalEl.textContent = '-';  totalEl.className = 'row-total empty';
-    }
+    var q = calcRow(row), a = document.getElementById('across-' + row.id), d = document.getElementById('down-' + row.id), t = document.getElementById('total-' + row.id);
+    if (!a) return;
+    if (q) { a.textContent = q.across; a.className = 'row-val'; d.textContent = q.down; d.className = 'row-val'; t.textContent = q.total; t.className = 'row-total'; gt += q.total; }
+    else { a.textContent = '-'; a.className = 'row-val empty'; d.textContent = '-'; d.className = 'row-val empty'; t.textContent = '-'; t.className = 'row-total empty'; }
   });
-  document.getElementById('gtNumber').textContent = grandTotal;
-  updateRemoveButtons();
-}
-
-function updateRemoveButtons() {
-  rows.forEach(function(row) {
-    var btn = document.getElementById('rm-' + row.id);
-    if (!btn) return;
-    if (rows.length <= 1) { btn.className = 'remove-btn disabled'; btn.disabled = true; }
-    else { btn.className = 'remove-btn'; btn.disabled = false; }
-  });
+  document.getElementById('gtNumber').textContent = gt;
+  rows.forEach(function(row) { var b = document.getElementById('rm-' + row.id); if (b) { if (rows.length <= 1) { b.className = 'remove-btn disabled'; b.disabled = true; } else { b.className = 'remove-btn'; b.disabled = false; } } });
 }
 
 function createRowDOM(row, idx) {
-  var div = document.createElement('div');
-  div.className = 'table-row'; div.id = 'row-' + row.id;
-
-  var labelInput = document.createElement('input');
-  labelInput.className = 'row-input label'; labelInput.value = row.label;
-  labelInput.placeholder = '공간' + (idx + 1);
-  labelInput.oninput = function() { row.label = this.value; };
-
-  var wInput = document.createElement('input');
-  wInput.className = 'row-input'; wInput.type = 'number'; wInput.inputMode = 'numeric';
-  wInput.value = row.width; wInput.placeholder = '가로';
-  wInput.oninput = function() { row.width = this.value; updateCalcOnly(); };
-
-  var hInput = document.createElement('input');
-  hInput.className = 'row-input'; hInput.type = 'number'; hInput.inputMode = 'numeric';
-  hInput.value = row.height; hInput.placeholder = '세로';
-  hInput.oninput = function() { row.height = this.value; updateCalcOnly(); };
-
-  var acrossDiv = document.createElement('div');
-  acrossDiv.id = 'across-' + row.id; acrossDiv.className = 'row-val empty'; acrossDiv.textContent = '-';
-  var downDiv = document.createElement('div');
-  downDiv.id = 'down-' + row.id; downDiv.className = 'row-val empty'; downDiv.textContent = '-';
-  var totalDiv = document.createElement('div');
-  totalDiv.id = 'total-' + row.id; totalDiv.className = 'row-total empty'; totalDiv.textContent = '-';
-
-  var rmBtn = document.createElement('button');
-  rmBtn.id = 'rm-' + row.id; rmBtn.className = 'remove-btn'; rmBtn.textContent = '×';
-  rmBtn.onclick = function() { removeRow(row.id); };
-
-  div.appendChild(labelInput); div.appendChild(wInput); div.appendChild(hInput);
-  div.appendChild(acrossDiv); div.appendChild(downDiv); div.appendChild(totalDiv);
-  div.appendChild(rmBtn);
+  var div = document.createElement('div'); div.className = 'table-row'; div.id = 'row-' + row.id;
+  var li = document.createElement('input'); li.className = 'row-input label'; li.placeholder = '공간' + (idx + 1); li.oninput = function() { row.label = this.value; };
+  var wi = document.createElement('input'); wi.className = 'row-input'; wi.type = 'number'; wi.inputMode = 'numeric'; wi.placeholder = '가로'; wi.oninput = function() { row.width = this.value; updateCalcOnly(); };
+  var hi = document.createElement('input'); hi.className = 'row-input'; hi.type = 'number'; hi.inputMode = 'numeric'; hi.placeholder = '세로'; hi.oninput = function() { row.height = this.value; updateCalcOnly(); };
+  var ad = document.createElement('div'); ad.id = 'across-' + row.id; ad.className = 'row-val empty'; ad.textContent = '-';
+  var dd = document.createElement('div'); dd.id = 'down-' + row.id; dd.className = 'row-val empty'; dd.textContent = '-';
+  var td = document.createElement('div'); td.id = 'total-' + row.id; td.className = 'row-total empty'; td.textContent = '-';
+  var rm = document.createElement('button'); rm.id = 'rm-' + row.id; rm.className = 'remove-btn'; rm.textContent = '×'; rm.onclick = function() { removeRow(row.id); };
+  div.appendChild(li); div.appendChild(wi); div.appendChild(hi); div.appendChild(ad); div.appendChild(dd); div.appendChild(td); div.appendChild(rm);
   return div;
 }
 
-function addRow() {
-  var id = nextId++;
-  var row = { id: id, label: '', width: '', height: '' };
-  rows.push(row);
-  document.getElementById('tableBody').appendChild(createRowDOM(row, rows.length - 1));
-  updateCalcOnly();
-}
-
-function removeRow(id) {
-  if (rows.length <= 1) return;
-  rows = rows.filter(function(r) { return r.id !== id; });
-  var el = document.getElementById('row-' + id);
-  if (el) el.remove();
-  updateCalcOnly();
-}
+function addRow() { var id = nextId++; var row = { id: id, label: '', width: '', height: '' }; rows.push(row); document.getElementById('tableBody').appendChild(createRowDOM(row, rows.length - 1)); updateCalcOnly(); }
+function removeRow(id) { if (rows.length <= 1) return; rows = rows.filter(function(r) { return r.id !== id; }); var el = document.getElementById('row-' + id); if (el) el.remove(); updateCalcOnly(); }
 
 async function captureAndShare() {
-  var btn = document.getElementById('shareBtn');
-  var addBtn = document.getElementById('addRowBtn');
-  btn.disabled = true; btn.innerHTML = '캡쳐 중...';
-  addBtn.style.display = 'none';
-
-  var cap = document.createElement('div');
-  cap.className = 'table-bottom-cap'; cap.id = 'tempCap';
-  document.getElementById('tableBody').after(cap);
-
+  var btn = document.getElementById('shareBtn'), addBtn = document.getElementById('addRowBtn');
+  btn.disabled = true; btn.innerHTML = '캡쳐 중...'; addBtn.style.display = 'none';
+  var cap = document.createElement('div'); cap.className = 'table-bottom-cap'; cap.id = 'tempCap'; document.getElementById('tableBody').after(cap);
   await new Promise(function(r) { setTimeout(r, 150); });
-
   try {
-    var canvas = await html2canvas(document.getElementById('captureArea'), {
-      backgroundColor: '#ffffff', scale: 2, useCORS: true,
-    });
+    var canvas = await html2canvas(document.getElementById('captureArea'), { backgroundColor: '#ffffff', scale: 2, useCORS: true });
     canvas.toBlob(function(blob) {
       if (!blob) return;
       var file = new File([blob], '매트허브_타일계산.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        navigator.share({ files: [file], title: '매트허브 타일계산 결과' });
-      } else {
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a'); a.href = url;
-        a.download = '매트허브_타일계산.png'; a.click();
-        URL.revokeObjectURL(url);
-      }
+      if (navigator.canShare && navigator.canShare({ files: [file] })) { navigator.share({ files: [file], title: '매트허브 타일계산 결과' }); }
+      else { var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = '매트허브_타일계산.png'; a.click(); URL.revokeObjectURL(url); }
     }, 'image/png');
   } catch(e) { console.error(e); }
-
-  var tempCap = document.getElementById('tempCap');
-  if (tempCap) tempCap.remove();
-  addBtn.style.display = '';
-  btn.disabled = false;
+  var tc = document.getElementById('tempCap'); if (tc) tc.remove();
+  addBtn.style.display = ''; btn.disabled = false;
   btn.innerHTML = '<span style="font-size:20px;">💬</span> 이미지 캡쳐 후 카톡 공유';
 }
 </script>
