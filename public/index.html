@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>매트허브 타일계산기</title>
+<title>매트.타일 계산기 - 매트허브</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -12,13 +13,81 @@ body {
   background: #f5f5f0;
   min-height: 100vh;
 }
+
+/* ── 로그인 화면 ── */
+.login-screen {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 20px;
+}
+.login-logo { font-size: 13px; color: #7eb8da; letter-spacing: 3px; font-weight: 500; margin-bottom: 6px; }
+.login-title { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: #8899aa; margin-bottom: 40px; }
+.login-box {
+  background: #fff; border-radius: 16px; padding: 32px 24px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.login-box-title { font-size: 15px; font-weight: 700; color: #1a1a2e; text-align: center; margin-bottom: 24px; }
+.login-btn {
+  width: 100%; padding: 14px 16px; border-radius: 10px; border: 1.5px solid #ddd;
+  background: #fff; cursor: pointer; display: flex; align-items: center;
+  gap: 12px; font-size: 15px; font-weight: 600; color: #333;
+  transition: all 0.15s; margin-bottom: 12px;
+}
+.login-btn:active { transform: scale(0.98); }
+.login-btn:hover { border-color: #aaa; background: #fafafa; }
+.login-btn img { width: 24px; height: 24px; }
+.login-btn.google { border-color: #4285f4; }
+.login-btn.google:hover { background: #f0f4ff; }
+.login-btn.naver { border-color: #03c75a; }
+.login-btn.naver:hover { background: #edfff4; }
+.login-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 16px 0; color: #bbb; font-size: 12px;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px; background: #e0e0e0;
+}
+.login-guest {
+  width: 100%; padding: 12px; border-radius: 10px; border: 1px dashed #ccc;
+  background: transparent; color: #999; font-size: 13px; font-weight: 500;
+  cursor: pointer; text-align: center;
+}
+.login-guest:hover { color: #666; border-color: #aaa; }
+.login-footer { margin-top: 24px; font-size: 11px; color: #556; text-align: center; line-height: 1.6; }
+
+/* ── 앱 상단 유저바 ── */
+.user-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; background: #fff; border-bottom: 1px solid #eee;
+}
+.user-info { display: flex; align-items: center; gap: 8px; }
+.user-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #1a1a2e; color: #fff; font-size: 12px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.user-name { font-size: 13px; color: #333; font-weight: 500; }
+.user-provider { font-size: 10px; color: #999; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
+.logout-btn {
+  padding: 6px 12px; border-radius: 6px; border: 1px solid #ddd;
+  background: #fff; color: #888; font-size: 11px; cursor: pointer;
+}
+.logout-btn:hover { background: #f5f5f5; }
+
+/* ── 앱 본문 ── */
 .capture-area { background: #fff; padding-bottom: 20px; }
 .header {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   padding: 24px 20px; text-align: center;
 }
 .header-sub { font-size: 13px; color: #7eb8da; letter-spacing: 3px; margin-bottom: 4px; font-weight: 500; }
-.header-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; margin:0; }
+.header-title { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: 1px; }
 .header-desc { font-size: 12px; color: #8899aa; margin-top: 4px; }
 .section { padding: 20px 16px 0; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
@@ -128,73 +197,239 @@ body {
 .share-btn:active { filter: brightness(0.95); }
 .share-btn:disabled { background: #ccc; cursor: wait; }
 .share-hint { text-align: center; font-size: 11px; color: #999; margin-top: 8px; }
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div id="captureArea" class="capture-area">
-  <div class="header">
-    <div class="header-sub">MATHUB</div>
-    <h1 class="header-title">매트허브 타일계산기</h1>
-    <div class="header-desc">안전매트 수량 산출</div>
+<!-- ══════ 로그인 화면 ══════ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-logo">MATHUB</div>
+  <div class="login-title">매트.타일 계산기</div>
+  <div class="login-sub">안전매트 수량 산출 도구</div>
+  <div class="login-box">
+    <div class="login-box-title">로그인하고 시작하기</div>
+    <button class="login-btn google" onclick="googleLogin()">
+      <svg width="24" height="24" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Google 로그인
+    </button>
+    <button class="login-btn naver" onclick="naverLogin()">
+      <svg width="24" height="24" viewBox="0 0 24 24"><rect width="24" height="24" rx="4" fill="#03C75A"/><path d="M8 7h2.8l3.2 4.8V7H16v10h-2.8L10 12.2V17H8V7z" fill="#fff"/></svg>
+      네이버 로그인
+    </button>
+    <div class="login-divider">또는</div>
+    <button class="login-guest" onclick="guestLogin()">게스트로 둘러보기</button>
   </div>
-
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">타일(매트) 규격 선택</span>
-      <button id="lockBtn" class="lock-btn" onclick="toggleLock()">🔓 고정하기</button>
-    </div>
-    <div id="hint" class="hint">✓ 다른 규격을 눌러 바로 비교할 수 있습니다</div>
-    <div class="tile-grid" id="tileGrid"></div>
-  </div>
-
-  <div class="section">
-    <div class="section-title" style="margin-bottom:4px;">면적 입력 및 예상수량</div>
-    <div class="table-info">가로·세로(mm) 입력 시 예상 매트 수(반올림)를 자동 계산합니다</div>
-    <div class="table-header">
-      <span>구분</span><span>가로mm</span><span>세로mm</span>
-      <span>가로</span><span>세로</span><span>수량</span><span></span>
-    </div>
-    <div id="tableBody"></div>
-    <button id="addRowBtn" class="add-row-btn" onclick="addRow()">+ 공간 추가</button>
-
-    <div class="grand-total">
-      <div>
-        <div class="gt-label-sub" id="gtSpec">선택 규격: 600mm × 600mm</div>
-        <div class="gt-label">총 예상수량</div>
-      </div>
-      <div class="gt-number"><span id="gtNumber">0</span><span class="gt-unit">장</span></div>
-    </div>
-
-    <div class="disclaimer">
-      ⚠️ 본 계산 결과는 단순 수치상의 대략적인 수량이며, 가구 배치·실제 집안 환경·시공 여건에 따라 실 소요량은 달라질 수 있습니다. 실제 수량 카운터가 아닌 <b>참고용</b>으로만 활용해 주세요. 정확한 수량은 현장 실측 후 확인하시기 바랍니다.
-    </div>
-
-    <div class="footer">
-      © <span id="year"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
-      본 계산기의 저작권은 하스놀 주식회사에 있으며, 무단 복제 및 배포를 금합니다.<br>
-      <span style="color:#777;">프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b>1660-1195</b></span>
-    </div>
+  <div class="login-footer">
+    © <span id="yearLogin"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
+    프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b style="color:#7eb8da;">1660-1195</b>
   </div>
 </div>
 
-<div class="share-area">
-  <button id="shareBtn" class="share-btn" onclick="captureAndShare()">
-    <span style="font-size:20px;">💬</span> 이미지 캡쳐 후 카톡 공유
-  </button>
-  <div class="share-hint">버튼 클릭 시 계산 결과가 이미지로 저장됩니다</div>
+<!-- ══════ 앱 화면 ══════ -->
+<div id="appScreen" class="hidden">
+
+  <!-- 유저바 -->
+  <div class="user-bar">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">G</div>
+      <span class="user-name" id="userName">게스트</span>
+      <span class="user-provider" id="userProvider">guest</span>
+    </div>
+    <button class="logout-btn" onclick="logout()">로그아웃</button>
+  </div>
+
+  <div id="captureArea" class="capture-area">
+    <div class="header">
+      <div class="header-sub">MATHUB</div>
+      <h1 class="header-title">매트.타일 계산기</h1>
+      <div class="header-desc">안전매트 수량 산출</div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">타일(매트) 규격 선택</span>
+        <button id="lockBtn" class="lock-btn" onclick="toggleLock()">🔓 고정하기</button>
+      </div>
+      <div id="hint" class="hint">✓ 다른 규격을 눌러 바로 비교할 수 있습니다</div>
+      <div class="tile-grid" id="tileGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" style="margin-bottom:4px;">면적 입력 및 예상수량</div>
+      <div class="table-info">가로·세로(mm) 입력 시 예상 매트 수(반올림)를 자동 계산합니다</div>
+      <div class="table-header">
+        <span>구분</span><span>가로mm</span><span>세로mm</span>
+        <span>가로</span><span>세로</span><span>수량</span><span></span>
+      </div>
+      <div id="tableBody"></div>
+      <button id="addRowBtn" class="add-row-btn" onclick="addRow()">+ 공간 추가</button>
+
+      <div class="grand-total">
+        <div>
+          <div class="gt-label-sub" id="gtSpec">선택 규격: 600mm × 600mm</div>
+          <div class="gt-label">총 예상수량</div>
+        </div>
+        <div class="gt-number"><span id="gtNumber">0</span><span class="gt-unit">장</span></div>
+      </div>
+
+      <div class="disclaimer">
+        ⚠️ 본 계산 결과는 단순 수치상의 대략적인 수량이며, 가구 배치·실제 집안 환경·시공 여건에 따라 실 소요량은 달라질 수 있습니다. 실제 수량 카운터가 아닌 <b>참고용</b>으로만 활용해 주세요. 정확한 수량은 현장 실측 후 확인하시기 바랍니다.
+      </div>
+
+      <div class="footer">
+        © <span id="year"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
+        본 계산기의 저작권은 하스놀 주식회사에 있으며, 무단 복제 및 배포를 금합니다.<br>
+        <span style="color:#777;">프로그램 · 홈페이지 · 마케팅 · DB 협력문의 <b>1660-1195</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="share-area">
+    <button id="shareBtn" class="share-btn" onclick="captureAndShare()">
+      <span style="font-size:20px;">💬</span> 이미지 캡쳐 후 카톡 공유
+    </button>
+    <div class="share-hint">버튼 클릭 시 계산 결과가 이미지로 저장됩니다</div>
+  </div>
 </div>
 
 <script>
+/* ══════════════════════════════
+   로그인 / 인증
+   ══════════════════════════════ */
+
+// ★ 아래 CLIENT ID를 발급받아 교체하세요
+var GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+var NAVER_CLIENT_ID  = 'YOUR_NAVER_CLIENT_ID';
+var NAVER_CALLBACK   = window.location.origin + window.location.pathname;
+
+var currentUser = null;
+
+document.getElementById('yearLogin').textContent = new Date().getFullYear();
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// 세션 복원
+(function restoreSession() {
+  try {
+    var saved = sessionStorage.getItem('matcel_user');
+    if (saved) { currentUser = JSON.parse(saved); showApp(); }
+  } catch(e) {}
+
+  // 네이버 콜백 처리
+  var hash = window.location.hash;
+  if (hash && hash.indexOf('access_token') > -1) {
+    var params = {};
+    hash.replace('#','').split('&').forEach(function(p) {
+      var kv = p.split('=');
+      params[kv[0]] = decodeURIComponent(kv[1] || '');
+    });
+    if (params.access_token) {
+      currentUser = { name: '네이버 사용자', provider: 'naver', avatar: '' };
+      sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
+      window.location.hash = '';
+      showApp();
+    }
+  }
+})();
+
+/* Google 로그인 */
+function googleLogin() {
+  if (GOOGLE_CLIENT_ID.indexOf('YOUR_') === 0) {
+    alert('Google Client ID가 설정되지 않았습니다.\n관리자에게 문의하세요.\n\n게스트로 이용 가능합니다.');
+    return;
+  }
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleGoogleResponse
+  });
+  google.accounts.id.prompt();
+}
+
+function handleGoogleResponse(response) {
+  try {
+    var payload = JSON.parse(atob(response.credential.split('.')[1]));
+    currentUser = {
+      name: payload.name || payload.email,
+      email: payload.email,
+      avatar: payload.picture || '',
+      provider: 'google'
+    };
+    sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
+    showApp();
+  } catch(e) { alert('Google 로그인 실패. 다시 시도해주세요.'); }
+}
+
+/* 네이버 로그인 */
+function naverLogin() {
+  if (NAVER_CLIENT_ID.indexOf('YOUR_') === 0) {
+    alert('Naver Client ID가 설정되지 않았습니다.\n관리자에게 문의하세요.\n\n게스트로 이용 가능합니다.');
+    return;
+  }
+  var state = Math.random().toString(36).substring(2);
+  var url = 'https://nid.naver.com/oauth2.0/authorize'
+    + '?response_type=token'
+    + '&client_id=' + NAVER_CLIENT_ID
+    + '&redirect_uri=' + encodeURIComponent(NAVER_CALLBACK)
+    + '&state=' + state;
+  window.location.href = url;
+}
+
+/* 게스트 */
+function guestLogin() {
+  currentUser = { name: '게스트', provider: 'guest', avatar: '' };
+  sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
+  showApp();
+}
+
+/* 로그아웃 */
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem('matcel_user');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
+}
+
+/* 앱 표시 */
+function showApp() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+
+  var avatarEl = document.getElementById('userAvatar');
+  var nameEl = document.getElementById('userName');
+  var provEl = document.getElementById('userProvider');
+
+  nameEl.textContent = currentUser.name;
+  var pLabel = { google: 'Google', naver: '네이버', guest: '게스트' };
+  provEl.textContent = pLabel[currentUser.provider] || currentUser.provider;
+
+  if (currentUser.avatar) {
+    avatarEl.innerHTML = '<img src="' + currentUser.avatar + '" alt="">';
+  } else {
+    avatarEl.textContent = (currentUser.name || 'G').charAt(0).toUpperCase();
+  }
+
+  initCalculator();
+}
+
+
+/* ══════════════════════════════
+   타일 계산기 (기존 로직)
+   ══════════════════════════════ */
+
 var TILE_SIZES = [500, 600, 700, 800, 1000, 1200];
 var selectedSize = 600;
 var locked = false;
 var rows = [];
 var nextId = 1;
+var calcInitialized = false;
 
-document.getElementById('year').textContent = new Date().getFullYear();
+function initCalculator() {
+  if (calcInitialized) return;
+  calcInitialized = true;
+  renderTileGrid();
+  for (var i = 0; i < 5; i++) addRow();
+}
 
-/* ── 규격 버튼 ── */
 function renderTileGrid() {
   var grid = document.getElementById('tileGrid');
   grid.innerHTML = '';
@@ -213,7 +448,6 @@ function renderTileGrid() {
   });
 }
 
-/* ── 고정 ── */
 function toggleLock() {
   locked = !locked;
   var btn = document.getElementById('lockBtn');
@@ -227,7 +461,6 @@ function toggleLock() {
   renderTileGrid();
 }
 
-/* ── 행 계산 ── */
 function calcRow(row) {
   var w = Number(row.width);
   var h = Number(row.height);
@@ -237,11 +470,9 @@ function calcRow(row) {
   return { across: across, down: down, total: across * down };
 }
 
-/* ── 계산 결과만 갱신 (입력 필드 유지) ── */
 function updateCalcOnly() {
   document.getElementById('gtSpec').textContent =
     selectedSize ? '선택 규격: ' + selectedSize + 'mm × ' + selectedSize + 'mm' : '선택 규격: 미선택';
-
   var grandTotal = 0;
   rows.forEach(function(row) {
     var q = calcRow(row);
@@ -250,112 +481,73 @@ function updateCalcOnly() {
     var totalEl  = document.getElementById('total-' + row.id);
     if (!acrossEl) return;
     if (q) {
-      acrossEl.textContent = q.across;
-      acrossEl.className = 'row-val';
-      downEl.textContent = q.down;
-      downEl.className = 'row-val';
-      totalEl.textContent = q.total;
-      totalEl.className = 'row-total';
+      acrossEl.textContent = q.across;  acrossEl.className = 'row-val';
+      downEl.textContent = q.down;      downEl.className = 'row-val';
+      totalEl.textContent = q.total;    totalEl.className = 'row-total';
       grandTotal += q.total;
     } else {
-      acrossEl.textContent = '-';
-      acrossEl.className = 'row-val empty';
-      downEl.textContent = '-';
-      downEl.className = 'row-val empty';
-      totalEl.textContent = '-';
-      totalEl.className = 'row-total empty';
+      acrossEl.textContent = '-'; acrossEl.className = 'row-val empty';
+      downEl.textContent = '-';   downEl.className = 'row-val empty';
+      totalEl.textContent = '-';  totalEl.className = 'row-total empty';
     }
   });
   document.getElementById('gtNumber').textContent = grandTotal;
   updateRemoveButtons();
 }
 
-/* ── 삭제 버튼 상태 ── */
 function updateRemoveButtons() {
   rows.forEach(function(row) {
     var btn = document.getElementById('rm-' + row.id);
     if (!btn) return;
-    if (rows.length <= 1) {
-      btn.className = 'remove-btn disabled';
-      btn.disabled = true;
-    } else {
-      btn.className = 'remove-btn';
-      btn.disabled = false;
-    }
+    if (rows.length <= 1) { btn.className = 'remove-btn disabled'; btn.disabled = true; }
+    else { btn.className = 'remove-btn'; btn.disabled = false; }
   });
 }
 
-/* ── DOM에 행 추가 ── */
 function createRowDOM(row, idx) {
   var div = document.createElement('div');
-  div.className = 'table-row';
-  div.id = 'row-' + row.id;
+  div.className = 'table-row'; div.id = 'row-' + row.id;
 
   var labelInput = document.createElement('input');
-  labelInput.className = 'row-input label';
-  labelInput.value = row.label;
+  labelInput.className = 'row-input label'; labelInput.value = row.label;
   labelInput.placeholder = '공간' + (idx + 1);
   labelInput.oninput = function() { row.label = this.value; };
 
   var wInput = document.createElement('input');
-  wInput.className = 'row-input';
-  wInput.type = 'number';
-  wInput.inputMode = 'numeric';
-  wInput.value = row.width;
-  wInput.placeholder = '가로';
+  wInput.className = 'row-input'; wInput.type = 'number'; wInput.inputMode = 'numeric';
+  wInput.value = row.width; wInput.placeholder = '가로';
   wInput.oninput = function() { row.width = this.value; updateCalcOnly(); };
 
   var hInput = document.createElement('input');
-  hInput.className = 'row-input';
-  hInput.type = 'number';
-  hInput.inputMode = 'numeric';
-  hInput.value = row.height;
-  hInput.placeholder = '세로';
+  hInput.className = 'row-input'; hInput.type = 'number'; hInput.inputMode = 'numeric';
+  hInput.value = row.height; hInput.placeholder = '세로';
   hInput.oninput = function() { row.height = this.value; updateCalcOnly(); };
 
   var acrossDiv = document.createElement('div');
-  acrossDiv.id = 'across-' + row.id;
-  acrossDiv.className = 'row-val empty';
-  acrossDiv.textContent = '-';
-
+  acrossDiv.id = 'across-' + row.id; acrossDiv.className = 'row-val empty'; acrossDiv.textContent = '-';
   var downDiv = document.createElement('div');
-  downDiv.id = 'down-' + row.id;
-  downDiv.className = 'row-val empty';
-  downDiv.textContent = '-';
-
+  downDiv.id = 'down-' + row.id; downDiv.className = 'row-val empty'; downDiv.textContent = '-';
   var totalDiv = document.createElement('div');
-  totalDiv.id = 'total-' + row.id;
-  totalDiv.className = 'row-total empty';
-  totalDiv.textContent = '-';
+  totalDiv.id = 'total-' + row.id; totalDiv.className = 'row-total empty'; totalDiv.textContent = '-';
 
   var rmBtn = document.createElement('button');
-  rmBtn.id = 'rm-' + row.id;
-  rmBtn.className = 'remove-btn';
-  rmBtn.textContent = '×';
+  rmBtn.id = 'rm-' + row.id; rmBtn.className = 'remove-btn'; rmBtn.textContent = '×';
   rmBtn.onclick = function() { removeRow(row.id); };
 
-  div.appendChild(labelInput);
-  div.appendChild(wInput);
-  div.appendChild(hInput);
-  div.appendChild(acrossDiv);
-  div.appendChild(downDiv);
-  div.appendChild(totalDiv);
+  div.appendChild(labelInput); div.appendChild(wInput); div.appendChild(hInput);
+  div.appendChild(acrossDiv); div.appendChild(downDiv); div.appendChild(totalDiv);
   div.appendChild(rmBtn);
-
   return div;
 }
 
-/* ── 행 추가 ── */
 function addRow() {
   var id = nextId++;
   var row = { id: id, label: '', width: '', height: '' };
   rows.push(row);
-  var body = document.getElementById('tableBody');
-  body.appendChild(createRowDOM(row, rows.length - 1));
+  document.getElementById('tableBody').appendChild(createRowDOM(row, rows.length - 1));
   updateCalcOnly();
 }
 
-/* ── 행 삭제 ── */
 function removeRow(id) {
   if (rows.length <= 1) return;
   rows = rows.filter(function(r) { return r.id !== id; });
@@ -364,17 +556,14 @@ function removeRow(id) {
   updateCalcOnly();
 }
 
-/* ── 캡쳐 & 공유 ── */
 async function captureAndShare() {
   var btn = document.getElementById('shareBtn');
   var addBtn = document.getElementById('addRowBtn');
-  btn.disabled = true;
-  btn.innerHTML = '캡쳐 중...';
+  btn.disabled = true; btn.innerHTML = '캡쳐 중...';
   addBtn.style.display = 'none';
 
   var cap = document.createElement('div');
-  cap.className = 'table-bottom-cap';
-  cap.id = 'tempCap';
+  cap.className = 'table-bottom-cap'; cap.id = 'tempCap';
   document.getElementById('tableBody').after(cap);
 
   await new Promise(function(r) { setTimeout(r, 150); });
@@ -390,14 +579,12 @@ async function captureAndShare() {
         navigator.share({ files: [file], title: '매트허브 타일계산 결과' });
       } else {
         var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = '매트허브_타일계산.png';
-        a.click();
+        var a = document.createElement('a'); a.href = url;
+        a.download = '매트허브_타일계산.png'; a.click();
         URL.revokeObjectURL(url);
       }
     }, 'image/png');
-  } catch (e) { console.error(e); }
+  } catch(e) { console.error(e); }
 
   var tempCap = document.getElementById('tempCap');
   if (tempCap) tempCap.remove();
@@ -405,10 +592,6 @@ async function captureAndShare() {
   btn.disabled = false;
   btn.innerHTML = '<span style="font-size:20px;">💬</span> 이미지 캡쳐 후 카톡 공유';
 }
-
-/* ── 초기화 ── */
-renderTileGrid();
-for (var i = 0; i < 5; i++) addRow();
 </script>
 </body>
 </html>
