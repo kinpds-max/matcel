@@ -6,6 +6,8 @@
 <title>매트.타일 계산기 - 매트허브</title>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.portone.io/v2/browser-sdk.js"></script>
+<!-- ★ AdSense: YOUR_ADSENSE_ID를 발급받아 교체하세요 -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_ID" crossorigin="anonymous"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -118,6 +120,23 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
 .share-btn:active{filter:brightness(0.95);}
 .share-btn:disabled{background:#ccc;cursor:wait;}
 .share-hint{text-align:center;font-size:11px;color:#999;margin-top:8px;}
+/* ── 광고 화면 (게스트) ── */
+.ad-screen{min-height:100vh;background:#f5f5f0;display:flex;flex-direction:column;align-items:center;padding:20px 16px;}
+.ad-top{text-align:center;padding:20px 0 16px;}
+.ad-top-title{font-size:18px;font-weight:700;color:#1a1a2e;}
+.ad-top-sub{font-size:13px;color:#888;margin-top:4px;}
+.ad-box{width:100%;max-width:400px;min-height:280px;background:#fff;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;margin-bottom:20px;overflow:hidden;}
+.ad-placeholder{text-align:center;color:#bbb;font-size:13px;padding:20px;}
+.ad-timer{text-align:center;margin-bottom:20px;}
+.ad-timer-num{font-size:48px;font-weight:800;color:#1a1a2e;}
+.ad-timer-text{font-size:13px;color:#888;margin-top:4px;}
+.ad-skip-btn{width:100%;max-width:400px;padding:16px;border-radius:12px;border:none;background:#1a1a2e;color:#fff;font-size:16px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.ad-skip-btn:disabled{background:#ccc;color:#999;cursor:not-allowed;}
+.ad-skip-btn.ready{background:linear-gradient(135deg,#27ae60,#2ecc71);}
+.ad-upgrade{text-align:center;margin-top:16px;padding:14px;background:#fff;border-radius:10px;max-width:400px;width:100%;}
+.ad-upgrade p{font-size:12px;color:#888;line-height:1.6;}
+.ad-upgrade b{color:#2563eb;}
+
 .hidden{display:none!important;}
 </style>
 </head>
@@ -136,7 +155,7 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
       네이버 로그인
     </button>
     <div class="login-divider">또는</div>
-    <button class="login-guest" onclick="guestLogin()">게스트로 둘러보기 (요금제 안내)</button>
+    <button class="login-guest" onclick="guestLogin()">게스트로 둘러보기 (광고 시청 후 이용)</button>
   </div>
   <div class="login-footer">
     © <span id="yearLogin"></span> 매트허브 MatHub ・ 하스놀 주식회사<br>
@@ -216,6 +235,37 @@ body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-s
   </div>
   <div class="pricing-logout">
     <span onclick="logout()">← 로그아웃</span>
+  </div>
+</div>
+
+<!-- ══════ 2.5 광고 화면 (게스트) ══════ -->
+<div id="adScreen" class="ad-screen hidden">
+  <div class="ad-top">
+    <div class="ad-top-title">📺 광고 시청 후 이용 가능합니다</div>
+    <div class="ad-top-sub">게스트는 광고 시청 후 계산기를 무료로 체험할 수 있습니다</div>
+  </div>
+  <div class="ad-box" id="adContainer">
+    <div class="ad-placeholder">
+      <!-- AdSense 광고 슬롯 -->
+      <ins class="adsbygoogle"
+        style="display:block;width:100%;min-height:250px;"
+        data-ad-client="YOUR_ADSENSE_ID"
+        data-ad-slot="YOUR_AD_SLOT"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+      <div id="adFallback" style="padding:40px 20px;color:#bbb;">
+        <div style="font-size:40px;margin-bottom:12px;">📢</div>
+        광고 로딩 중...
+      </div>
+    </div>
+  </div>
+  <div class="ad-timer">
+    <div class="ad-timer-num" id="adCountdown">15</div>
+    <div class="ad-timer-text">초 후 이용 가능</div>
+  </div>
+  <button class="ad-skip-btn" id="adSkipBtn" disabled onclick="enterAsGuest()">광고 시청 중...</button>
+  <div class="ad-upgrade">
+    <p>광고 없이 바로 이용하려면?<br><b>월 3만원 구독</b> 또는 <b>50만원 프로그램 구입</b><br>📞 1660-1195</p>
   </div>
 </div>
 
@@ -312,6 +362,7 @@ async function checkSubscription(email) {
 function showLogin() {
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('pricingScreen').classList.add('hidden');
+  document.getElementById('adScreen').classList.add('hidden');
   document.getElementById('appScreen').classList.add('hidden');
 }
 function showPricing() {
@@ -381,8 +432,58 @@ function naverLogin() {
   window.location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=token&client_id=' + NAVER_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(NAVER_CALLBACK) + '&state=' + state;
 }
 
-/* 게스트 */
-function guestLogin() { processLogin({ name: '게스트', email: '', provider: 'guest', avatar: '' }); }
+/* 게스트 - 광고 시청 후 이용 */
+function guestLogin() {
+  currentUser = { name: '게스트', email: '', provider: 'guest', avatar: '' };
+  sessionStorage.setItem('matcel_user', JSON.stringify(currentUser));
+  showAdScreen();
+}
+
+/* 광고 화면 */
+function showAdScreen() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('pricingScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.add('hidden');
+  document.getElementById('adScreen').classList.remove('hidden');
+
+  // AdSense 로드 시도
+  try { (adsbygoogle = window.adsbygoogle || []).push({}); } catch(e) {}
+
+  // 15초 카운트다운
+  var sec = 15;
+  var btn = document.getElementById('adSkipBtn');
+  var numEl = document.getElementById('adCountdown');
+  btn.disabled = true;
+  btn.textContent = '광고 시청 중...';
+  btn.className = 'ad-skip-btn';
+
+  var timer = setInterval(function() {
+    sec--;
+    numEl.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(timer);
+      btn.disabled = false;
+      btn.textContent = '✓ 계산기 이용하기';
+      btn.className = 'ad-skip-btn ready';
+      numEl.textContent = '✓';
+    }
+  }, 1000);
+}
+
+/* 광고 시청 후 계산기 진입 */
+function enterAsGuest() {
+  userPlan = 'guest';
+  document.getElementById('adScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.remove('hidden');
+  document.getElementById('userName').textContent = '게스트 (체험)';
+  var badge = document.getElementById('userPlanBadge');
+  badge.textContent = '체험판';
+  badge.className = 'user-plan-badge';
+  badge.style.background = '#f0f0f0';
+  badge.style.color = '#888';
+  document.getElementById('userAvatar').textContent = 'G';
+  initCalculator();
+}
 
 /* 로그아웃 */
 function logout() {
