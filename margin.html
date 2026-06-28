@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>매트 마진 계산기 2026</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:#0f172a; color:#e2e8f0;
+  min-height:100vh; padding:14px 13px 50px;
+}
+.header { text-align:center; padding:14px 0 16px; }
+.header h1 { font-size:19px; font-weight:800; color:#f1f5f9; }
+.header p  { font-size:11px; color:#475569; margin-top:3px; }
+.wrap { max-width:500px; margin:0 auto; }
+.card {
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px; padding:14px; margin-bottom:10px;
+}
+.card-label {
+  font-size:11px; font-weight:700; color:#64748b;
+  letter-spacing:.06em; text-transform:uppercase; margin-bottom:10px;
+}
+select, input[type="number"] {
+  width:100%;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:8px; color:#e2e8f0;
+  padding:10px 12px; font-size:14px;
+  outline:none; font-family:inherit; -webkit-appearance:none;
+}
+select option { background:#1e293b; color:#e2e8f0; }
+
+.sell-tab-row { display:flex; gap:7px; margin-bottom:10px; }
+.sell-tab {
+  flex:1; padding:9px 4px; border-radius:8px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.05); color:#94a3b8;
+  font-size:12px; cursor:pointer; font-family:inherit;
+  font-weight:500; transition:all .15s; text-align:center;
+}
+.sell-tab.on { border-color:#6366f1; background:rgba(99,102,241,0.18); color:#a5b4fc; font-weight:700; }
+
+.price-grid { display:grid; gap:6px; margin-bottom:8px; }
+.g2 { grid-template-columns:1fr 1fr; }
+.g3 { grid-template-columns:1fr 1fr 1fr; }
+.price-btn {
+  padding:9px 5px; border-radius:9px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  color:#94a3b8; font-size:11px; cursor:pointer;
+  font-family:inherit; text-align:center; line-height:1.5;
+  transition:all .15s;
+}
+.price-btn.on { border-color:#6366f1; background:rgba(99,102,241,0.18); color:#a5b4fc; font-weight:700; }
+.price-btn .bl { font-weight:600; font-size:11px; display:block; }
+.price-btn .bp { font-size:11px; color:#cbd5e1; display:block; }
+.price-btn .bsub { font-size:9px; color:#475569; display:block; margin-top:1px; }
+.price-btn.on .bp { color:#a5b4fc; }
+.price-btn.on .bsub { color:#6366f1; }
+
+.info-box {
+  background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.28);
+  border-radius:8px; padding:9px 13px; font-size:12px; color:#a5b4fc;
+  margin-top:8px; display:flex; justify-content:space-between; align-items:center;
+}
+.info-box strong { font-size:15px; color:#c7d2fe; }
+
+.buy-box {
+  background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.25);
+  border-radius:8px; padding:9px 13px; font-size:12px; color:#38bdf8;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;
+}
+.buy-box .brow { display:flex; justify-content:space-between; width:100%; align-items:center; }
+.buy-box strong { font-size:15px; color:#7dd3fc; }
+.buy-box small { font-size:10px; color:#475569; }
+
+.disc-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.disc-item input[type="checkbox"] { display:none; }
+.disc-item label {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 11px; border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  cursor:pointer; transition:all .15s;
+}
+.disc-item input:checked + label { border-color:#6366f1; background:rgba(99,102,241,0.16); }
+.disc-name { font-size:12px; color:#cbd5e1; line-height:1.4; white-space:pre-line; }
+.disc-item input:checked + label .disc-name { color:#a5b4fc; font-weight:700; }
+.disc-amt { font-size:12px; font-weight:700; color:#64748b; white-space:nowrap; margin-left:4px; }
+.disc-item input:checked + label .disc-amt { color:#818cf8; }
+.disc-tag { font-size:9px; color:#0ea5e9; display:block; margin-top:2px; }
+
+.qty-row { display:flex; align-items:center; gap:9px; }
+.qty-btn {
+  width:38px; height:38px; border-radius:8px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.07);
+  color:#e2e8f0; font-size:20px; cursor:pointer; flex-shrink:0;
+}
+.qty-inp { width:70px !important; text-align:center; font-size:16px !important; font-weight:700; flex-shrink:0; }
+
+.result-card { border-radius:16px; padding:20px; margin-bottom:10px; transition:all .3s; }
+.mr-big { text-align:center; font-size:52px; font-weight:900; line-height:1; }
+.mr-badge {
+  display:inline-block; border-radius:20px;
+  padding:3px 14px; font-size:12px; font-weight:700; margin:6px 0 14px;
+}
+.rrow { display:flex; justify-content:space-between; align-items:center; padding:5px 0; font-size:13px; }
+.rrow .lbl { color:#94a3b8; }
+.rrow .val { font-weight:600; font-size:14px; }
+.rrow.tot .val { font-size:18px; font-weight:800; }
+.rrow.sub .lbl { font-size:11px; color:#475569; padding-left:12px; }
+.rrow.sub .val { font-size:11px; color:#475569; }
+hr.dv { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:7px 0; }
+
+.cmp-table { width:100%; border-collapse:collapse; font-size:11px; }
+.cmp-table th {
+  padding:7px 4px; text-align:center; color:#64748b;
+  border-bottom:1px solid rgba(255,255,255,0.08); font-weight:700;
+}
+.cmp-table td { padding:7px 4px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.04); }
+.cmp-table tr.on { background:rgba(99,102,241,0.1); }
+.cmp-table tr { cursor:pointer; }
+.rbadge { display:inline-block; border-radius:10px; padding:2px 7px; font-weight:700; font-size:10px; }
+.prod-badge { display:inline-block; border-radius:20px; padding:3px 12px; font-size:11px; font-weight:700; margin-top:8px; }
+.sec-label { font-size:11px; color:#64748b; font-weight:600; margin-bottom:6px; }
+.footnote { text-align:center; font-size:11px; color:#334155; padding:8px 0 16px; }
+.grp-sep {
+  grid-column:1/-1; font-size:11px; color:#64748b; font-weight:600;
+  margin-top:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.07);
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🧮 매트 마진 계산기</h1>
+  <p>2026 제품별 단가표 기준</p>
+</div>
+
+<div class="wrap">
+
+<!-- ① 제품 -->
+<div class="card">
+  <div class="card-label">📦 제품 선택</div>
+  <select id="prodSel" onchange="onProd()">
+    <option value="0">600 엠보</option>
+    <option value="1">600 라인</option>
+    <option value="2">600 레더 센터 (베이지 라인)</option>
+    <option value="3">600 레더 사이드 (베이지 라인)</option>
+    <option value="4">800 그레이</option>
+    <option value="5">1000 레더 (화이트 엠보)</option>
+    <option value="6">1200*1200 센터</option>
+    <option value="7">1200*640 사이드64</option>
+    <option value="8">1200*600 센터/사이드</option>
+    <option value="9">1200*1200 레더 센터 (베이지 라인)</option>
+    <option value="10">1200*640 레더 사이드64 (베이지 라인)</option>
+    <option value="11">1200*600 레더 센터/사이드 (베이지 라인)</option>
+  </select>
+  <span id="prodBadge" class="prod-badge"></span>
+</div>
+
+<!-- ② 매입원가 -->
+<div class="card">
+  <div class="card-label">💰 매입원가 (공장공급가 · VAT 포함)</div>
+  <div class="buy-box">
+    <div class="brow">
+      <span>VAT 포함 매입가</span>
+      <strong id="buyVatDisp">—</strong>
+    </div>
+    <div class="brow">
+      <small>VAT 제외 공급가</small>
+      <small id="buyExDisp" style="color:#475569;">—</small>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 판매가 -->
+<div class="card">
+  <div class="card-label">🏷️ 판매가 선택</div>
+  <div class="sell-tab-row">
+    <button class="sell-tab on" id="stJisa" onclick="setSellMode('jisa')">지사 · 대리점</button>
+    <button class="sell-tab"   id="stCons" onclick="setSellMode('consumer')">소비자</button>
+  </div>
+
+  <!-- 지사/대리점 -->
+  <div id="jisaSection">
+    <div class="sec-label">지사 · 대리점 판매가 <span style="color:#475569;font-weight:400;">(VAT 포함)</span></div>
+    <div class="price-grid g3" id="jisaGrid"></div>
+  </div>
+
+  <!-- 소비자 -->
+  <div id="consSection" style="display:none">
+    <div class="sec-label">소비자 판매가 <span style="color:#475569;font-weight:400;">(VAT 포함 최종가)</span></div>
+    <div class="price-grid g2" id="consGrid"></div>
+  </div>
+
+  <div class="sec-label" style="margin-top:8px;">직접 입력</div>
+  <input type="number" id="sellCustom" placeholder="판매가 직접 입력 (원)" oninput="calc()">
+  <div class="info-box" style="margin-top:8px;">
+    <span>적용 판매가 (VAT포함)</span>
+    <strong id="sellApplied">—</strong>
+  </div>
+</div>
+
+<!-- ④ 할인 -->
+<div class="card">
+  <div class="card-label">✂️ 할인 항목 (복수 체크 가능)</div>
+  <div class="disc-grid" id="discGrid"></div>
+</div>
+
+<!-- ⑤ 수량 -->
+<div class="card">
+  <div class="card-label">⚙️ 수량</div>
+  <div class="qty-row">
+    <button class="qty-btn" onclick="chgQty(-1)">−</button>
+    <input type="number" id="qtyInp" class="qty-inp" value="1" min="1" oninput="calc()">
+    <button class="qty-btn" onclick="chgQty(1)">+</button>
+    <span style="font-size:13px;color:#64748b;white-space:nowrap;">개</span>
+  </div>
+</div>
+
+<!-- ⑥ 결과 -->
+<div class="result-card" id="resCard">
+  <div style="text-align:center;">
+    <div style="font-size:12px;color:#94a3b8;margin-bottom:3px;">예상 마진율</div>
+    <div class="mr-big" id="mrRate">—</div>
+    <div><span class="mr-badge" id="mrBadge">—</span></div>
+  </div>
+  <hr class="dv" style="margin:12px 0 10px;">
+  <div class="rrow">
+    <span class="lbl" id="rSellLbl">판매가</span>
+    <span class="val" id="rSell" style="color:#22d3ee;">—</span>
+  </div>
+  <div class="rrow">
+    <span class="lbl" id="rBuyLbl">매입원가 (VAT포함)</span>
+    <span class="val" id="rBuy" style="color:#f87171;">—</span>
+  </div>
+  <div id="discDetail"></div>
+  <div class="rrow">
+    <span class="lbl">할인 합계</span>
+    <span class="val" id="rDiscTotal" style="color:#fb923c;">0원</span>
+  </div>
+  <hr class="dv">
+  <div class="rrow tot">
+    <span class="lbl" style="font-weight:700;color:#e2e8f0;font-size:14px;">마진 (세전)</span>
+    <span class="val" id="rMargin">—</span>
+  </div>
+</div>
+
+<!-- ⑦ 비교표 -->
+<div class="card">
+  <div class="card-label">📊 판매가별 마진 비교</div>
+  <table class="cmp-table">
+    <thead>
+      <tr>
+        <th style="text-align:left;padding-left:6px;">구분</th>
+        <th>판매가</th><th>매입가</th><th>마진</th><th>마진율</th>
+      </tr>
+    </thead>
+    <tbody id="cmpBody"></tbody>
+  </table>
+</div>
+
+<div class="footnote">* 모든 금액 VAT 포함 기준 · 2026 제품별 단가표</div>
+</div>
+
+<script>
+// ─── 데이터 ────────────────────────────────────────────────────
+// 지사/대리점: 엑셀 D,F,H,J,L열 = VAT 포함 금액
+// 공장공급가(buy): VAT 제외 → 계산시 ×1.1
+// 소비자가: VAT 포함 최종가
+// delivSupport: 배송비지원 장당 (600=300, 800이상=1500)
+const P = [
+  {
+    name:"600 엠보", sz:"600", buy:14000,
+    jisa:{"지사판매가":18000,"지사지원가":17500,"지사이전공구가":16500},
+    dealer:{"대리점판매가":18500,"대리점지원가":18000},
+    consumer:{"소비자가(셀프)":23000,"소비자가(시공)":27000},
+    install:3000, deliver:1000, cash:1000, delivSupport:300,
+  },
+  {
+    name:"600 라인", sz:"600", buy:13000,
+    jisa:{"지사판매가":17500,"지사지원가":17000,"지사이전공구가":16000},
+    dealer:{"대리점판매가":18000,"대리점지원가":17500},
+    consumer:{"소비자가(셀프)":23000,"소비자가(시공)":27000},
+    install:3000, deliver:1000, cash:1000, delivSupport:300,
+  },
+  {
+    name:"600 레더 센터 (베이지 라인)", sz:"600", buy:14900,
+    jisa:{"지사판매가":19500,"지사지원가":19000},
+    dealer:{"대리점판매가":20000,"대리점지원가":19500},
+    consumer:{"소비자가(셀프)":25000,"소비자가(시공)":29000},
+    install:3000, deliver:1000, cash:1000, delivSupport:300,
+  },
+  {
+    name:"600 레더 사이드 (베이지 라인)", sz:"600", buy:15100,
+    jisa:{"지사판매가":19500,"지사지원가":19000},
+    dealer:{"대리점판매가":20000,"대리점지원가":19500},
+    consumer:{"소비자가(셀프)":25000,"소비자가(시공)":29000},
+    install:3000, deliver:1000, cash:1000, delivSupport:300,
+  },
+  {
+    name:"800 그레이", sz:"800", buy:28000,
+    jisa:{"지사판매가":36000,"지사지원가":35500,"지사이전공구가":32500},
+    dealer:{"대리점판매가":36500,"대리점지원가":36000},
+    consumer:{"소비자가(셀프)":43000,"소비자가(시공)":50000},
+    install:5300, deliver:1500, cash:1000, delivSupport:1500,
+  },
+  {
+    name:"1000 레더 (화이트 엠보)", sz:"1000", buy:52500,
+    jisa:{"지사판매가":70000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":90000,"소비자가(시공)":100000},
+    install:8300, deliver:2000, cash:1000, delivSupport:1500,
+  },
+  {
+    name:"1200*1200 센터", sz:"1200×1200", buy:66100,
+    jisa:{"지사판매가":86000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":105000,"소비자가(시공)":135000},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+  {
+    name:"1200*640 사이드64", sz:"1200×640", buy:36900,
+    jisa:{"지사판매가":49000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":52500,"소비자가(시공)":67500},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+  {
+    name:"1200*600 센터/사이드", sz:"1200×600", buy:36400,
+    jisa:{"지사판매가":48000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":52500,"소비자가(시공)":67500},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+  {
+    name:"1200*1200 레더 센터 (베이지 라인)", sz:"1200×1200", buy:72800,
+    jisa:{"지사판매가":94000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":120000,"소비자가(시공)":155000},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+  {
+    name:"1200*640 레더 사이드64 (베이지 라인)", sz:"1200×640", buy:40700,
+    jisa:{"지사판매가":54000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":60000,"소비자가(시공)":77500},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+  {
+    name:"1200*600 레더 센터/사이드 (베이지 라인)", sz:"1200×600", buy:40200,
+    jisa:{"지사판매가":53000},
+    dealer:{},
+    consumer:{"소비자가(셀프)":60000,"소비자가(시공)":77500},
+    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+  },
+];
+
+const SZ_COL = {
+  "600":"#22c55e","800":"#3b82f6","1000":"#f59e0b",
+  "1200×1200":"#a855f7","1200×640":"#ef4444","1200×600":"#06b6d4"
+};
+
+let sellMode = 'jisa';
+let selKey   = null;
+
+function init() { onProd(); }
+
+function onProd() {
+  const p = getP();
+  const col = SZ_COL[p.sz]||'#94a3b8';
+  const b = document.getElementById('prodBadge');
+  b.style.cssText = `background:${col}22;border:1px solid ${col}55;color:${col}`;
+  b.textContent = p.sz;
+  selKey = null;
+  buildPriceGrids(p);
+  buildDiscGrid(p);
+  calc();
+}
+
+function buildPriceGrids(p) {
+  // 지사+대리점
+  const jg = document.getElementById('jisaGrid');
+  jg.innerHTML = '';
+  const jKeys = Object.keys(p.jisa);
+  const dKeys = Object.keys(p.dealer);
+  jg.className = 'price-grid ' + (Math.max(jKeys.length,dKeys.length)>=3?'g3':'g2');
+
+  jKeys.forEach((k,i) => {
+    const isOn = sellMode==='jisa' && (selKey===k || (selKey===null && i===0));
+    jg.appendChild(mkBtn(k, p.jisa[k], isOn));
+  });
+  if(dKeys.length > 0) {
+    const sep = document.createElement('div');
+    sep.className='grp-sep'; sep.textContent='대리점';
+    jg.appendChild(sep);
+    dKeys.forEach(k => {
+      const isOn = sellMode==='jisa' && selKey===k;
+      jg.appendChild(mkBtn(k, p.dealer[k], isOn));
+    });
+  }
+
+  // 소비자
+  const cg = document.getElementById('consGrid');
+  cg.innerHTML = '';
+  Object.entries(p.consumer).forEach(([k,v],i) => {
+    const isOn = sellMode==='consumer' && (selKey===k||(selKey===null&&i===0));
+    cg.appendChild(mkBtn(k, v, isOn));
+  });
+}
+
+function mkBtn(key, val, isOn) {
+  const btn = document.createElement('button');
+  btn.className = 'price-btn'+(isOn?' on':'');
+  btn.id = 'pb_'+key;
+  btn.innerHTML = `
+    <span class="bl">${key}</span>
+    <span class="bp">${fmt(val)}원</span>
+    <span class="bsub">VAT 포함</span>`;
+  btn.onclick = () => selectPrice(key);
+  return btn;
+}
+
+function buildDiscGrid(p) {
+  const g = document.getElementById('discGrid');
+  const prev = {};
+  g.querySelectorAll('input[type=checkbox]').forEach(el => { prev[el.id]=el.checked; });
+  g.innerHTML = '';
+
+  const items = [
+    {id:'dc_install',  name:'시공비',              amt:p.install,       jisaOnly:false},
+    {id:'dc_deliver',  name:'운반비',              amt:p.deliver,       jisaOnly:false},
+    {id:'dc_cash',     name:'현금할인',            amt:p.cash,          jisaOnly:false},
+    {id:'dc_p2',       name:'2인 할인',           amt:500,             jisaOnly:false},
+    {id:'dc_p3',       name:'3인 할인',           amt:1000,            jisaOnly:false},
+    {id:'dc_apt',      name:'아파트공구\n(10인↑)', amt:2000,            jisaOnly:false},
+    {id:'dc_dsupp',    name:'배송비지원\n(장당)',   amt:p.delivSupport,  jisaOnly:true},
+  ];
+
+  items.forEach(d => {
+    const hide = d.jisaOnly && sellMode==='consumer';
+    const div = document.createElement('div');
+    div.className = 'disc-item';
+    div.id = 'wrap_'+d.id;
+    div.style.display = hide ? 'none' : '';
+    const tag = d.jisaOnly
+      ? `<span class="disc-tag">지사·대리점 전용</span>` : '';
+    div.innerHTML = `
+      <input type="checkbox" id="${d.id}" ${prev[d.id]?'checked':''} onchange="calc()">
+      <label for="${d.id}">
+        <span class="disc-name" style="white-space:pre-line">${d.name}${tag}</span>
+        <span class="disc-amt">−${fmt(d.amt)}</span>
+      </label>`;
+    g.appendChild(div);
+  });
+}
+
+function selectPrice(key) {
+  selKey = key;
+  document.getElementById('sellCustom').value = '';
+  document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('on'));
+  const btn = document.getElementById('pb_'+key);
+  if(btn) btn.classList.add('on');
+  calc();
+}
+
+function setSellMode(mode) {
+  sellMode = mode;
+  selKey = null;
+  document.getElementById('stJisa').classList.toggle('on', mode==='jisa');
+  document.getElementById('stCons').classList.toggle('on', mode==='consumer');
+  document.getElementById('jisaSection').style.display = mode==='jisa' ? '' : 'none';
+  document.getElementById('consSection').style.display = mode==='consumer' ? '' : 'none';
+  document.getElementById('sellCustom').value = '';
+  // 배송비지원 토글
+  const dw = document.getElementById('wrap_dc_dsupp');
+  if(dw) dw.style.display = mode==='consumer' ? 'none' : '';
+  buildPriceGrids(getP());
+  calc();
+}
+
+function chgQty(d) {
+  const inp = document.getElementById('qtyInp');
+  inp.value = Math.max(1,(+inp.value||1)+d);
+  calc();
+}
+
+function calc() {
+  const p   = getP();
+  const qty = Math.max(1, +document.getElementById('qtyInp').value || 1);
+
+  // 매입원가: 공장공급가 × 1.1 (VAT 포함으로 통일)
+  const buyUnit = Math.round(p.buy * 1.1);
+
+  // 판매가 (모두 VAT 포함)
+  const customV = document.getElementById('sellCustom').value;
+  const isConsumer = sellMode === 'consumer';
+  let sellUnit = 0;
+
+  if(customV !== '') {
+    sellUnit = +customV;
+  } else {
+    const allMap = {...p.jisa,...p.dealer,...p.consumer};
+    if(selKey && allMap[selKey]!==undefined) {
+      sellUnit = allMap[selKey];
+    } else {
+      const firstMap = isConsumer ? p.consumer : {...p.jisa,...p.dealer};
+      const fk = Object.keys(firstMap)[0];
+      sellUnit = fk ? firstMap[fk] : 0;
+    }
+  }
+
+  // 할인 집계
+  const discDefs = [
+    {id:'dc_install', name:'시공비',             amt:p.install,      jisaOnly:false},
+    {id:'dc_deliver', name:'운반비',             amt:p.deliver,      jisaOnly:false},
+    {id:'dc_cash',    name:'현금할인',           amt:p.cash,         jisaOnly:false},
+    {id:'dc_p2',      name:'2인 할인',          amt:500,            jisaOnly:false},
+    {id:'dc_p3',      name:'3인 할인',          amt:1000,           jisaOnly:false},
+    {id:'dc_apt',     name:'아파트공구(10인↑)', amt:2000,           jisaOnly:false},
+    {id:'dc_dsupp',   name:'배송비지원(장당)',   amt:p.delivSupport, jisaOnly:true},
+  ];
+  let totalDiscUnit = 0;
+  const checked = [];
+  discDefs.forEach(d => {
+    if(d.jisaOnly && isConsumer) return;
+    const el = document.getElementById(d.id);
+    if(el && el.checked) { totalDiscUnit += d.amt; checked.push(d); }
+  });
+
+  const totalSell  = sellUnit * qty;
+  const totalBuy   = buyUnit  * qty;
+  const totalDisc  = totalDiscUnit * qty;
+  const netSell    = totalSell - totalDisc;
+  const margin     = netSell - totalBuy;
+  const mRate      = netSell > 0 ? (margin/netSell)*100 : 0;
+  const mc         = mcolor(mRate);
+
+  // 매입원가 표시
+  document.getElementById('buyVatDisp').textContent = fmt(buyUnit)+'원';
+  document.getElementById('buyExDisp').textContent  = fmt(p.buy)+'원 (VAT제외)';
+  document.getElementById('sellApplied').textContent = fmt(sellUnit)+'원';
+
+  document.getElementById('rSellLbl').textContent = `판매가 (×${qty})`;
+  document.getElementById('rBuyLbl').textContent  = `매입원가 × ${qty} (VAT포함)`;
+  document.getElementById('rSell').textContent    = fmt(totalSell)+'원';
+  document.getElementById('rBuy').textContent     = fmt(totalBuy)+'원';
+  document.getElementById('rDiscTotal').textContent = totalDisc>0?'−'+fmt(totalDisc)+'원':'0원';
+  document.getElementById('rMargin').textContent  = fmt(margin)+'원';
+  document.getElementById('rMargin').style.color  = mc;
+  document.getElementById('mrRate').textContent   = mRate.toFixed(1)+'%';
+  document.getElementById('mrRate').style.color   = mc;
+
+  document.getElementById('discDetail').innerHTML = checked.map(d=>`
+    <div class="rrow sub">
+      <span class="lbl">↳ ${d.name}</span>
+      <span class="val">−${fmt(d.amt*qty)}원</span>
+    </div>`).join('');
+
+  const badge = document.getElementById('mrBadge');
+  const lbl = mRate>=30?'🟢 우수':mRate>=20?'🟡 양호':mRate>=10?'🟠 주의':'🔴 위험';
+  badge.textContent = lbl;
+  badge.style.background = mc+'22';
+  badge.style.color = mc;
+  document.getElementById('resCard').style.cssText =
+    `background:linear-gradient(135deg,${mc}14,${mc}06);border:1px solid ${mc}44;border-radius:16px;padding:20px;margin-bottom:10px`;
+
+  // 비교표
+  const tbody = document.getElementById('cmpBody');
+  tbody.innerHTML = '';
+  const modeMap = isConsumer ? p.consumer : {...p.jisa,...p.dealer};
+  Object.entries(modeMap).forEach(([k,sp]) => {
+    const net  = sp - totalDiscUnit;
+    const m    = net - buyUnit;
+    const mr   = net>0?(m/net)*100:0;
+    const col2 = mcolor(mr);
+    const isOn = customV==='' && (selKey===k||(selKey===null&&k===Object.keys(modeMap)[0]));
+    const tr   = document.createElement('tr');
+    tr.className = isOn?'on':'';
+    tr.onclick   = () => selectPrice(k);
+    tr.innerHTML = `
+      <td style="color:${isOn?'#a5b4fc':'#e2e8f0'};font-weight:${isOn?700:400};text-align:left;padding-left:6px;">${k}</td>
+      <td style="color:#e2e8f0;text-align:right;">${fmt(sp)}</td>
+      <td style="color:#94a3b8;text-align:right;">${fmt(buyUnit)}</td>
+      <td style="color:${col2};text-align:right;">${fmt(m)}</td>
+      <td><span class="rbadge" style="background:${col2}22;color:${col2};">${mr.toFixed(1)}%</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function getP() { return P[+document.getElementById('prodSel').value]; }
+function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+function mcolor(r) {
+  return r>=30?'#22c55e':r>=20?'#84cc16':r>=10?'#f59e0b':'#ef4444';
+}
+
+init();
+</script>
+</body>
+</html>
