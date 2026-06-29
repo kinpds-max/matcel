@@ -82,7 +82,7 @@ select option { background:#1e293b; color:#e2e8f0; }
 .disc-item input[type="checkbox"] { display:none; }
 .disc-item label {
   display:flex; align-items:center; justify-content:space-between;
-  padding:10px 11px; border-radius:10px;
+  padding:9px 11px; border-radius:10px;
   border:1px solid rgba(255,255,255,0.1);
   background:rgba(255,255,255,0.04);
   cursor:pointer; transition:all .15s;
@@ -93,6 +93,32 @@ select option { background:#1e293b; color:#e2e8f0; }
 .disc-amt { font-size:12px; font-weight:700; color:#64748b; white-space:nowrap; margin-left:4px; }
 .disc-item input:checked + label .disc-amt { color:#818cf8; }
 .disc-tag { font-size:9px; color:#0ea5e9; display:block; margin-top:2px; }
+/* 직접입력 */
+.disc-custom-row {
+  grid-column: 1 / -1;
+  display:none;
+  margin-top:2px;
+}
+.disc-custom-row.show { display:flex; align-items:center; gap:8px; }
+.disc-custom-inp {
+  flex:1; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(99,102,241,0.4);
+  border-radius:8px; color:#e2e8f0;
+  padding:8px 10px; font-size:13px;
+  outline:none; font-family:inherit;
+}
+.disc-custom-lbl { font-size:12px; color:#818cf8; white-space:nowrap; font-weight:600; }
+/* 직접입력 추가 버튼 */
+.disc-add-btn {
+  grid-column: 1 / -1;
+  padding:8px; border-radius:9px;
+  border:1px dashed rgba(255,255,255,0.15);
+  background:transparent; color:#64748b;
+  font-size:12px; cursor:pointer;
+  font-family:inherit; transition:all .15s;
+  display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.disc-add-btn:hover { border-color:rgba(99,102,241,0.4); color:#a5b4fc; }
 
 .qty-row { display:flex; align-items:center; gap:9px; }
 .qty-btn {
@@ -462,6 +488,10 @@ function mkBtn(key, val, isOn) {
   return btn;
 }
 
+// 커스텀 할인 항목 배열
+let customDiscs = []; // [{id, name, amt, checked}]
+let customDiscSeq = 0;
+
 function buildDiscGrid(p) {
   const g = document.getElementById('discGrid');
   const prev = {};
@@ -484,8 +514,7 @@ function buildDiscGrid(p) {
     div.className = 'disc-item';
     div.id = 'wrap_'+d.id;
     div.style.display = hide ? 'none' : '';
-    const tag = d.jisaOnly
-      ? `<span class="disc-tag">지사·대리점 전용</span>` : '';
+    const tag = d.jisaOnly ? `<span class="disc-tag">지사·대리점 전용</span>` : '';
     div.innerHTML = `
       <input type="checkbox" id="${d.id}" ${prev[d.id]?'checked':''} onchange="calc()">
       <label for="${d.id}">
@@ -494,6 +523,87 @@ function buildDiscGrid(p) {
       </label>`;
     g.appendChild(div);
   });
+
+  // 기존 커스텀 항목 재생성
+  customDiscs.forEach(cd => renderCustomDisc(g, cd));
+
+  // 직접입력 추가 버튼
+  const addBtn = document.createElement('button');
+  addBtn.className = 'disc-add-btn';
+  addBtn.id = 'discAddBtn';
+  addBtn.innerHTML = `<span style="font-size:16px;line-height:1">＋</span> 할인금액 직접 추가`;
+  addBtn.onclick = addCustomDisc;
+  g.appendChild(addBtn);
+}
+
+function renderCustomDisc(g, cd) {
+  // 추가 버튼 앞에 삽입
+  const addBtn = g.querySelector('#discAddBtn');
+
+  const div = document.createElement('div');
+  div.className = 'disc-item';
+  div.id = 'wrap_cdc_'+cd.id;
+  div.innerHTML = `
+    <input type="checkbox" id="cdc_${cd.id}" ${cd.checked?'checked':''} onchange="calc()">
+    <label for="cdc_${cd.id}" style="flex:1;">
+      <span class="disc-name">${cd.name||'직접입력'}</span>
+      <span class="disc-amt">−${fmt(cd.amt)}</span>
+    </label>
+    <button onclick="removeCustomDisc(${cd.id})" style="background:none;border:none;color:#ef4444;font-size:15px;cursor:pointer;padding:0 0 0 6px;flex-shrink:0;">✕</button>`;
+  if(addBtn) g.insertBefore(div, addBtn);
+  else g.appendChild(div);
+
+  // 입력 행
+  const row = document.createElement('div');
+  row.className = 'disc-custom-row show';
+  row.id = 'row_cdc_'+cd.id;
+  row.innerHTML = `
+    <span class="disc-custom-lbl">이름</span>
+    <input class="disc-custom-inp" id="nm_cdc_${cd.id}" placeholder="할인명" value="${cd.name}"
+      style="max-width:90px;" oninput="updateCustomDisc(${cd.id})">
+    <span class="disc-custom-lbl">금액</span>
+    <input class="disc-custom-inp" id="amt_cdc_${cd.id}" type="number" placeholder="0"
+      value="${cd.amt||''}" oninput="updateCustomDisc(${cd.id})">
+    <span style="font-size:12px;color:#64748b;">원</span>`;
+  if(addBtn) g.insertBefore(row, addBtn);
+  else g.appendChild(row);
+}
+
+function addCustomDisc() {
+  const cd = {id: ++customDiscSeq, name:'', amt:0, checked:true};
+  customDiscs.push(cd);
+  const g = document.getElementById('discGrid');
+  renderCustomDisc(g, cd);
+  // 포커스
+  setTimeout(()=>{ const el=document.getElementById('nm_cdc_'+cd.id); if(el) el.focus(); }, 50);
+  calc();
+}
+
+function updateCustomDisc(id) {
+  const cd = customDiscs.find(c=>c.id===id);
+  if(!cd) return;
+  const nm = document.getElementById('nm_cdc_'+id);
+  const am = document.getElementById('amt_cdc_'+id);
+  if(nm) cd.name = nm.value;
+  if(am) cd.amt  = +am.value || 0;
+  // 라벨 업데이트
+  const wrap = document.getElementById('wrap_cdc_'+id);
+  if(wrap) {
+    const nameEl = wrap.querySelector('.disc-name');
+    const amtEl  = wrap.querySelector('.disc-amt');
+    if(nameEl) nameEl.textContent = cd.name||'직접입력';
+    if(amtEl)  amtEl.textContent  = '−'+fmt(cd.amt);
+  }
+  calc();
+}
+
+function removeCustomDisc(id) {
+  customDiscs = customDiscs.filter(c=>c.id!==id);
+  const wrap = document.getElementById('wrap_cdc_'+id);
+  const row  = document.getElementById('row_cdc_'+id);
+  if(wrap) wrap.remove();
+  if(row)  row.remove();
+  calc();
 }
 
 function selectPrice(key) {
@@ -595,6 +705,14 @@ function calc() {
     if(d.jisaOnly && isConsumer) return;
     const el = document.getElementById(d.id);
     if(el && el.checked) { totalDiscUnit += d.amt; checked.push(d); }
+  });
+  // 커스텀 할인 항목
+  customDiscs.forEach(cd => {
+    const el = document.getElementById('cdc_'+cd.id);
+    if(el && el.checked && cd.amt>0) {
+      totalDiscUnit += cd.amt;
+      checked.push({name: cd.name||'직접입력', amt: cd.amt});
+    }
   });
 
   const totalSell  = sellUnit * qty;
