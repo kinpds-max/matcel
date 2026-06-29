@@ -346,7 +346,7 @@ const P = [
     jisa:{"지사판매가":18000,"지사지원가":17500,"지사이전공구가":16500},
     dealer:{"대리점판매가":18500,"대리점지원가":18000},
     consumer:{"소비자가(셀프)":23000,"소비자가(시공)":27000},
-    install:3000, deliver:1000, cash:1000, delivSupport:300,
+    install:3000, deliver:1000, cash:1000, delivSupport:300, consDeliver:500, consDeliverHalf:300,
   },
   {
     name:"600 라인", sz:"600", buy:13000,
@@ -374,56 +374,56 @@ const P = [
     jisa:{"지사판매가":36000,"지사지원가":35500,"지사이전공구가":32500},
     dealer:{"대리점판매가":36500,"대리점지원가":36000},
     consumer:{"소비자가(셀프)":43000,"소비자가(시공)":50000},
-    install:5300, deliver:1500, cash:1000, delivSupport:1500,
+    install:5300, deliver:1500, cash:1000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1000 레더 (화이트 엠보)", sz:"1000", buy:52500,
     jisa:{"지사판매가":70000},
     dealer:{},
     consumer:{"소비자가(셀프)":90000,"소비자가(시공)":100000},
-    install:8300, deliver:2000, cash:1000, delivSupport:1500,
+    install:8300, deliver:2000, cash:1000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*1200 센터", sz:"1200×1200", buy:66100,
     jisa:{"지사판매가":86000},
     dealer:{},
     consumer:{"소비자가(셀프)":105000,"소비자가(시공)":135000},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*640 사이드64", sz:"1200×640", buy:36900,
     jisa:{"지사판매가":49000},
     dealer:{},
     consumer:{"소비자가(셀프)":52500,"소비자가(시공)":67500},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*600 센터/사이드", sz:"1200×600", buy:36400,
     jisa:{"지사판매가":48000},
     dealer:{},
     consumer:{"소비자가(셀프)":52500,"소비자가(시공)":67500},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*1200 레더 센터 (베이지 라인)", sz:"1200×1200", buy:72800,
     jisa:{"지사판매가":94000},
     dealer:{},
     consumer:{"소비자가(셀프)":120000,"소비자가(시공)":155000},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*640 레더 사이드64 (베이지 라인)", sz:"1200×640", buy:40700,
     jisa:{"지사판매가":54000},
     dealer:{},
     consumer:{"소비자가(셀프)":60000,"소비자가(시공)":77500},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
   {
     name:"1200*600 레더 센터/사이드 (베이지 라인)", sz:"1200×600", buy:40200,
     jisa:{"지사판매가":53000},
     dealer:{},
     consumer:{"소비자가(셀프)":60000,"소비자가(시공)":77500},
-    install:12000, deliver:5000, cash:2000, delivSupport:1500,
+    install:12000, deliver:5000, cash:2000, delivSupport:1500, consDeliver:1500, consDeliverHalf:1000,
   },
 ];
 
@@ -506,22 +506,30 @@ function buildDiscGrid(p) {
   g.innerHTML = '';
 
   const items = [
-    {id:'dc_install',  name:'시공비',              amt:p.install,       jisaOnly:false},
-    {id:'dc_deliver',  name:'운반비',              amt:p.deliver,       jisaOnly:false},
-    {id:'dc_cash',     name:'현금할인',            amt:p.cash,          jisaOnly:false},
-    {id:'dc_p2',       name:'2인 할인',           amt:500,             jisaOnly:false},
-    {id:'dc_p3',       name:'3인 할인',           amt:1000,            jisaOnly:false},
-    {id:'dc_apt',      name:'아파트공구\n(10인↑)', amt:2000,            jisaOnly:false},
-    {id:'dc_dsupp',    name:'배송비지원\n(장당)',   amt:p.delivSupport,  jisaOnly:true},
+    {id:'dc_install',      name:'시공비',                   amt:p.install,           jisaOnly:false, consHide:false},
+    {id:'dc_deliver',      name:'운반비',                   amt:p.deliver,           jisaOnly:false, consHide:true},
+    {id:'dc_deliver_cons', name:'운반비\n(소비자·전액)',    amt:p.consDeliver||500,  jisaOnly:false, consOnly:true},
+    {id:'dc_deliver_half', name:'운반비\n(소비자·절반)',    amt:p.consDeliverHalf||300, jisaOnly:false, consOnly:true},
+    {id:'dc_cash',         name:'현금할인',                 amt:p.cash,              jisaOnly:false, consHide:false},
+    {id:'dc_p2',           name:'2인 할인',                amt:500,                 jisaOnly:false, consHide:false},
+    {id:'dc_p3',           name:'3인 할인',                amt:1000,                jisaOnly:false, consHide:false},
+    {id:'dc_apt',          name:'아파트공구\n(10인↑)',      amt:2000,                jisaOnly:false, consHide:false},
+    {id:'dc_dsupp',        name:'배송비지원\n(장당)',        amt:p.delivSupport,      jisaOnly:true,  consHide:false},
   ];
 
   items.forEach(d => {
-    const hide = d.jisaOnly && sellMode==='consumer';
+    const isCons = sellMode === 'consumer';
+    // 숨김 조건
+    const hide = (d.jisaOnly && isCons)
+               || (d.consHide && isCons)
+               || (d.consOnly && !isCons);
     const div = document.createElement('div');
     div.className = 'disc-item';
     div.id = 'wrap_'+d.id;
     div.style.display = hide ? 'none' : '';
-    const tag = d.jisaOnly ? `<span class="disc-tag">지사·대리점 전용</span>` : '';
+    let tag = '';
+    if(d.jisaOnly) tag = `<span class="disc-tag">지사·대리점 전용</span>`;
+    if(d.consOnly) tag = `<span class="disc-tag" style="color:#f59e0b;">소비자 전용</span>`;
     div.innerHTML = `
       <input type="checkbox" id="${d.id}" ${prev[d.id]?'checked':''} onchange="calc()">
       <label for="${d.id}">
@@ -655,9 +663,16 @@ function setSellMode(mode) {
   document.getElementById('jisaSection').style.display = mode==='jisa' ? '' : 'none';
   document.getElementById('consSection').style.display = mode==='consumer' ? '' : 'none';
   document.getElementById('sellCustom').value = '';
-  // 배송비지원 토글
-  const dw = document.getElementById('wrap_dc_dsupp');
-  if(dw) dw.style.display = mode==='consumer' ? 'none' : '';
+  // 모드별 항목 숨김/표시
+  const isCons = mode === 'consumer';
+  ['dc_deliver','dc_dsupp'].forEach(id => {
+    const el = document.getElementById('wrap_'+id);
+    if(el) el.style.display = isCons ? 'none' : '';
+  });
+  ['dc_deliver_cons','dc_deliver_half'].forEach(id => {
+    const el = document.getElementById('wrap_'+id);
+    if(el) el.style.display = isCons ? '' : 'none';
+  });
   buildPriceGrids(getP());
   calc();
 }
@@ -705,7 +720,7 @@ function calc() {
 
   // 판매가 (모두 VAT 포함)
   const customV = document.getElementById('sellCustom').value;
-  const isConsumer = sellMode === 'consumer';
+  const isConsumer = isCons;
   let sellUnit = 0;
 
   if(customV !== '') {
@@ -722,19 +737,22 @@ function calc() {
   }
 
   // 할인 집계
+  const isCons = sellMode === 'consumer';
   const discDefs = [
-    {id:'dc_install', name:'시공비',             amt:p.install,      jisaOnly:false},
-    {id:'dc_deliver', name:'운반비',             amt:p.deliver,      jisaOnly:false},
-    {id:'dc_cash',    name:'현금할인',           amt:p.cash,         jisaOnly:false},
-    {id:'dc_p2',      name:'2인 할인',          amt:500,            jisaOnly:false},
-    {id:'dc_p3',      name:'3인 할인',          amt:1000,           jisaOnly:false},
-    {id:'dc_apt',     name:'아파트공구(10인↑)', amt:2000,           jisaOnly:false},
-    {id:'dc_dsupp',   name:'배송비지원(장당)',   amt:p.delivSupport, jisaOnly:true},
+    {id:'dc_install',      name:'시공비',              amt:p.install,              skip: false},
+    {id:'dc_deliver',      name:'운반비',              amt:p.deliver,              skip: isCons},
+    {id:'dc_deliver_cons', name:'운반비(소비자·전액)', amt:p.consDeliver||500,     skip: !isCons},
+    {id:'dc_deliver_half', name:'운반비(소비자·절반)', amt:p.consDeliverHalf||300, skip: !isCons},
+    {id:'dc_cash',         name:'현금할인',            amt:p.cash,                 skip: false},
+    {id:'dc_p2',           name:'2인 할인',           amt:500,                    skip: false},
+    {id:'dc_p3',           name:'3인 할인',           amt:1000,                   skip: false},
+    {id:'dc_apt',          name:'아파트공구(10인↑)',   amt:2000,                   skip: false},
+    {id:'dc_dsupp',        name:'배송비지원(장당)',     amt:p.delivSupport,         skip: isCons},
   ];
   let totalDiscUnit = 0;
   const checked = [];
   discDefs.forEach(d => {
-    if(d.jisaOnly && isConsumer) return;
+    if(d.skip) return;
     const el = document.getElementById(d.id);
     if(el && el.checked) { totalDiscUnit += d.amt; checked.push(d); }
   });
