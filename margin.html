@@ -726,8 +726,9 @@ function calc() {
   const buyUnit = Math.round(p.buy * 1.1);
 
   // 판매가 (모두 VAT 포함)
-  const customV = document.getElementById('sellCustom').value;
+  const isCons = sellMode === 'consumer';
   const isConsumer = isCons;
+  const customV = document.getElementById('sellCustom').value;
   let sellUnit = 0;
 
   if(customV !== '') {
@@ -745,7 +746,6 @@ function calc() {
   }
 
   // 할인 집계
-  const isCons = sellMode === 'consumer';
   const discDefs = [
     {id:'dc_install',      name:'시공비',              amt:p.install,              skip: false},
     {id:'dc_deliver',      name:'운반비',              amt:p.deliver,              skip: isCons},
