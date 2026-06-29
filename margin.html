@@ -508,8 +508,8 @@ function buildDiscGrid(p) {
   const items = [
     {id:'dc_install',      name:'시공비',                   amt:p.install,           jisaOnly:false, consHide:false},
     {id:'dc_deliver',      name:'운반비',                   amt:p.deliver,           jisaOnly:false, consHide:true},
-    {id:'dc_deliver_cons', name:'운반비\n(소비자·전액)',    amt:p.consDeliver||500,  jisaOnly:false, consOnly:true},
-    {id:'dc_deliver_half', name:'운반비\n(소비자·절반)',    amt:p.consDeliverHalf||300, jisaOnly:false, consOnly:true},
+    {id:'dc_deliver_cons', name:'운반비\n(판매자전액)',    amt:p.consDeliver||500,  jisaOnly:false, consOnly:true},
+    {id:'dc_deliver_half', name:'운반비\n(판매자절반)',    amt:p.consDeliverHalf||300, jisaOnly:false, consOnly:true},
     {id:'dc_cash',         name:'현금할인',                 amt:p.cash,              jisaOnly:false, consHide:false},
     {id:'dc_p2',           name:'2인 할인',                amt:500,                 jisaOnly:false, consHide:false},
     {id:'dc_p3',           name:'3인 할인',                amt:1000,                jisaOnly:false, consHide:false},
@@ -741,8 +741,8 @@ function calc() {
   const discDefs = [
     {id:'dc_install',      name:'시공비',              amt:p.install,              skip: false},
     {id:'dc_deliver',      name:'운반비',              amt:p.deliver,              skip: isCons},
-    {id:'dc_deliver_cons', name:'운반비(소비자·전액)', amt:p.consDeliver||500,     skip: !isCons},
-    {id:'dc_deliver_half', name:'운반비(소비자·절반)', amt:p.consDeliverHalf||300, skip: !isCons},
+    {id:'dc_deliver_cons', name:'운반비(판매자전액)', amt:p.consDeliver||500,     skip: !isCons},
+    {id:'dc_deliver_half', name:'운반비(판매자절반)', amt:p.consDeliverHalf||300, skip: !isCons},
     {id:'dc_cash',         name:'현금할인',            amt:p.cash,                 skip: false},
     {id:'dc_p2',           name:'2인 할인',           amt:500,                    skip: false},
     {id:'dc_p3',           name:'3인 할인',           amt:1000,                   skip: false},
