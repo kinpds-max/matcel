@@ -119,6 +119,13 @@ select option { background:#1e293b; color:#e2e8f0; }
   display:flex; align-items:center; justify-content:center; gap:5px;
 }
 .disc-add-btn:hover { border-color:rgba(99,102,241,0.4); color:#a5b4fc; }
+.type-btn {
+  padding:6px 4px; border-radius:6px; font-size:11px; font-weight:700;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.04); color:#64748b;
+  cursor:pointer; font-family:inherit; transition:all .15s;
+}
+.type-btn.on { border-color:#6366f1; background:rgba(99,102,241,0.2); color:#a5b4fc; }
 
 .qty-row { display:flex; align-items:center; gap:9px; }
 .qty-btn {
@@ -536,18 +543,24 @@ function buildDiscGrid(p) {
   g.appendChild(addBtn);
 }
 
+function calcCustomAmt(cd, sellUnit) {
+  // type: 'amt'(원) or 'pct'(%)
+  if(cd.type === 'pct') return Math.round(sellUnit * (cd.pct||0) / 100);
+  return cd.amt || 0;
+}
+
 function renderCustomDisc(g, cd) {
-  // 추가 버튼 앞에 삽입
   const addBtn = g.querySelector('#discAddBtn');
 
   const div = document.createElement('div');
   div.className = 'disc-item';
   div.id = 'wrap_cdc_'+cd.id;
+  div.style.gridColumn = '1 / -1';  // 전체 너비
   div.innerHTML = `
     <input type="checkbox" id="cdc_${cd.id}" ${cd.checked?'checked':''} onchange="calc()">
     <label for="cdc_${cd.id}" style="flex:1;">
-      <span class="disc-name">${cd.name||'직접입력'}</span>
-      <span class="disc-amt">−${fmt(cd.amt)}</span>
+      <span class="disc-name" id="cdcNm_${cd.id}">${cd.name||'직접입력'}</span>
+      <span class="disc-amt" id="cdcAmt_${cd.id}">—</span>
     </label>
     <button onclick="removeCustomDisc(${cd.id})" style="background:none;border:none;color:#ef4444;font-size:15px;cursor:pointer;padding:0 0 0 6px;flex-shrink:0;">✕</button>`;
   if(addBtn) g.insertBefore(div, addBtn);
@@ -557,20 +570,28 @@ function renderCustomDisc(g, cd) {
   const row = document.createElement('div');
   row.className = 'disc-custom-row show';
   row.id = 'row_cdc_'+cd.id;
+  row.style.gridColumn = '1 / -1';
   row.innerHTML = `
-    <span class="disc-custom-lbl">이름</span>
-    <input class="disc-custom-inp" id="nm_cdc_${cd.id}" placeholder="할인명" value="${cd.name}"
-      style="max-width:90px;" oninput="updateCustomDisc(${cd.id})">
-    <span class="disc-custom-lbl">금액</span>
-    <input class="disc-custom-inp" id="amt_cdc_${cd.id}" type="number" placeholder="0"
-      value="${cd.amt||''}" oninput="updateCustomDisc(${cd.id})">
-    <span style="font-size:12px;color:#64748b;">원</span>`;
+    <input class="disc-custom-inp" id="nm_cdc_${cd.id}" placeholder="할인명"
+      value="${cd.name}" style="max-width:80px;" oninput="updateCustomDisc(${cd.id})">
+    <div style="display:flex;gap:4px;align-items:center;flex:1;">
+      <button class="type-btn ${cd.type==='amt'?'on':''}" id="tb_amt_${cd.id}"
+        onclick="setDiscType(${cd.id},'amt')" style="flex:1;">원</button>
+      <button class="type-btn ${cd.type==='pct'?'on':''}" id="tb_pct_${cd.id}"
+        onclick="setDiscType(${cd.id},'pct')" style="flex:1;">%</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:4px;flex:1.5;">
+      <input class="disc-custom-inp" id="val_cdc_${cd.id}" type="number" placeholder="0"
+        value="${cd.type==='pct'?(cd.pct||''):(cd.amt||'')}"
+        oninput="updateCustomDisc(${cd.id})">
+      <span style="font-size:12px;color:#64748b;flex-shrink:0;" id="unit_cdc_${cd.id}">${cd.type==='pct'?'%':'원'}</span>
+    </div>`;
   if(addBtn) g.insertBefore(row, addBtn);
   else g.appendChild(row);
 }
 
 function addCustomDisc() {
-  const cd = {id: ++customDiscSeq, name:'', amt:0, checked:true};
+  const cd = {id: ++customDiscSeq, name:'', amt:0, pct:0, type:'amt', checked:true};
   customDiscs.push(cd);
   const g = document.getElementById('discGrid');
   renderCustomDisc(g, cd);
@@ -579,20 +600,31 @@ function addCustomDisc() {
   calc();
 }
 
+function setDiscType(id, type) {
+  const cd = customDiscs.find(c=>c.id===id);
+  if(!cd) return;
+  cd.type = type;
+  // 버튼 토글
+  document.getElementById('tb_amt_'+id).classList.toggle('on', type==='amt');
+  document.getElementById('tb_pct_'+id).classList.toggle('on', type==='pct');
+  // 단위 라벨
+  const unit = document.getElementById('unit_cdc_'+id);
+  if(unit) unit.textContent = type==='pct' ? '%' : '원';
+  // 값 필드 초기화
+  const val = document.getElementById('val_cdc_'+id);
+  if(val) val.value = type==='pct' ? (cd.pct||'') : (cd.amt||'');
+  calc();
+}
+
 function updateCustomDisc(id) {
   const cd = customDiscs.find(c=>c.id===id);
   if(!cd) return;
-  const nm = document.getElementById('nm_cdc_'+id);
-  const am = document.getElementById('amt_cdc_'+id);
+  const nm  = document.getElementById('nm_cdc_'+id);
+  const val = document.getElementById('val_cdc_'+id);
   if(nm) cd.name = nm.value;
-  if(am) cd.amt  = +am.value || 0;
-  // 라벨 업데이트
-  const wrap = document.getElementById('wrap_cdc_'+id);
-  if(wrap) {
-    const nameEl = wrap.querySelector('.disc-name');
-    const amtEl  = wrap.querySelector('.disc-amt');
-    if(nameEl) nameEl.textContent = cd.name||'직접입력';
-    if(amtEl)  amtEl.textContent  = '−'+fmt(cd.amt);
+  if(val) {
+    if(cd.type==='pct') cd.pct = +val.value || 0;
+    else                cd.amt = +val.value || 0;
   }
   calc();
 }
@@ -706,13 +738,23 @@ function calc() {
     const el = document.getElementById(d.id);
     if(el && el.checked) { totalDiscUnit += d.amt; checked.push(d); }
   });
-  // 커스텀 할인 항목
+  // 커스텀 할인 항목 (% 타입은 판매가 기준 계산)
   customDiscs.forEach(cd => {
     const el = document.getElementById('cdc_'+cd.id);
-    if(el && el.checked && cd.amt>0) {
-      totalDiscUnit += cd.amt;
-      checked.push({name: cd.name||'직접입력', amt: cd.amt});
-    }
+    if(!el || !el.checked) return;
+    const resolvedAmt = cd.type==='pct'
+      ? Math.round(sellUnit * (cd.pct||0) / 100)
+      : (cd.amt||0);
+    if(resolvedAmt <= 0) return;
+    totalDiscUnit += resolvedAmt;
+    checked.push({name: cd.name||'직접입력', amt: resolvedAmt});
+    // 라벨 업데이트
+    const amtEl = document.getElementById('cdcAmt_'+cd.id);
+    const nmEl  = document.getElementById('cdcNm_'+cd.id);
+    if(amtEl) amtEl.textContent = cd.type==='pct'
+      ? `−${fmt(resolvedAmt)}원 (${cd.pct}%)`
+      : `−${fmt(resolvedAmt)}원`;
+    if(nmEl) nmEl.textContent = cd.name||'직접입력';
   });
 
   const totalSell  = sellUnit * qty;
