@@ -453,6 +453,13 @@ function onProd() {
 }
 
 function buildPriceGrids(p) {
+  // selKey가 null이면 현재 모드 첫 번째 키로 자동 설정
+  if(selKey === null) {
+    const firstMap = sellMode==='consumer' ? p.consumer : {...p.jisa,...p.dealer};
+    const fk = Object.keys(firstMap)[0];
+    if(fk) selKey = fk;
+  }
+
   // 지사+대리점
   const jg = document.getElementById('jisaGrid');
   jg.innerHTML = '';
@@ -460,8 +467,8 @@ function buildPriceGrids(p) {
   const dKeys = Object.keys(p.dealer);
   jg.className = 'price-grid ' + (Math.max(jKeys.length,dKeys.length)>=3?'g3':'g2');
 
-  jKeys.forEach((k,i) => {
-    const isOn = sellMode==='jisa' && (selKey===k || (selKey===null && i===0));
+  jKeys.forEach((k) => {
+    const isOn = sellMode==='jisa' && selKey===k;
     jg.appendChild(mkBtn(k, p.jisa[k], isOn));
   });
   if(dKeys.length > 0) {
@@ -477,8 +484,8 @@ function buildPriceGrids(p) {
   // 소비자
   const cg = document.getElementById('consGrid');
   cg.innerHTML = '';
-  Object.entries(p.consumer).forEach(([k,v],i) => {
-    const isOn = sellMode==='consumer' && (selKey===k||(selKey===null&&i===0));
+  Object.entries(p.consumer).forEach(([k,v]) => {
+    const isOn = sellMode==='consumer' && selKey===k;
     cg.appendChild(mkBtn(k, v, isOn));
   });
 }
@@ -727,9 +734,10 @@ function calc() {
     sellUnit = +customV;
   } else {
     const allMap = {...p.jisa,...p.dealer,...p.consumer};
-    if(selKey && allMap[selKey]!==undefined) {
+    if(selKey && allMap[selKey] !== undefined) {
       sellUnit = allMap[selKey];
     } else {
+      // fallback: 현재 모드 첫 번째
       const firstMap = isConsumer ? p.consumer : {...p.jisa,...p.dealer};
       const fk = Object.keys(firstMap)[0];
       sellUnit = fk ? firstMap[fk] : 0;
