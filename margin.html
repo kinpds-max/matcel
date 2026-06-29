@@ -129,6 +129,15 @@ hr.dv { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:7px 0; 
 .prod-badge { display:inline-block; border-radius:20px; padding:3px 12px; font-size:11px; font-weight:700; margin-top:8px; }
 .sec-label { font-size:11px; color:#64748b; font-weight:600; margin-bottom:6px; }
 .footnote { text-align:center; font-size:11px; color:#334155; padding:8px 0 16px; }
+.ei-btn {
+  padding:9px 5px; border-radius:9px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  cursor:pointer; font-family:inherit; text-align:center;
+  transition:all .15s;
+}
+.ei-btn.on { border-color:#f59e0b; background:rgba(245,158,11,0.15); }
+.ei-btn.on span:first-child { color:#fbbf24 !important; }
 .grp-sep {
   grid-column:1/-1; font-size:11px; color:#64748b; font-weight:600;
   margin-top:4px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.07);
@@ -220,6 +229,30 @@ hr.dv { border:none; border-top:1px solid rgba(255,255,255,0.08); margin:7px 0; 
     <input type="number" id="qtyInp" class="qty-inp" value="1" min="1" oninput="calc()">
     <button class="qty-btn" onclick="chgQty(1)">+</button>
     <span style="font-size:13px;color:#64748b;white-space:nowrap;">개</span>
+  </div>
+  <!-- 추가시공비 (600계열만) -->
+  <div id="extraInstallWrap" style="margin-top:12px;display:none;">
+    <div style="font-size:11px;font-weight:700;color:#64748b;letter-spacing:.05em;margin-bottom:7px;">
+      📌 추가시공비 <span style="color:#475569;font-weight:400;">(600계열 · 수량 기준)</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
+      <button class="ei-btn on" id="ei0" onclick="setEI(0,0)">
+        <span style="display:block;font-size:12px;font-weight:700;color:#e2e8f0;">없음</span>
+        <span style="display:block;font-size:10px;color:#64748b;margin-top:2px;">70장 이상</span>
+      </button>
+      <button class="ei-btn" id="ei1" onclick="setEI(1,100000)">
+        <span style="display:block;font-size:12px;font-weight:700;color:#e2e8f0;">+10만원</span>
+        <span style="display:block;font-size:10px;color:#64748b;margin-top:2px;">41~69장</span>
+      </button>
+      <button class="ei-btn" id="ei2" onclick="setEI(2,200000)">
+        <span style="display:block;font-size:12px;font-weight:700;color:#e2e8f0;">+20만원</span>
+        <span style="display:block;font-size:10px;color:#64748b;margin-top:2px;">40장 이하</span>
+      </button>
+    </div>
+    <div style="font-size:11px;color:#475569;margin-top:7px;">
+      현재 수량 <strong id="qtyHint" style="color:#94a3b8;">—</strong>장 →
+      <span id="eiSuggest" style="color:#f59e0b;font-weight:600;"></span>
+    </div>
   </div>
 </div>
 
@@ -366,8 +399,9 @@ const SZ_COL = {
   "1200×1200":"#a855f7","1200×640":"#ef4444","1200×600":"#06b6d4"
 };
 
-let sellMode = 'jisa';
-let selKey   = null;
+let sellMode    = 'jisa';
+let selKey      = null;
+let extraInstall = 0;  // 추가시공비 (0 / 100000 / 200000)
 
 function init() { onProd(); }
 
@@ -378,6 +412,8 @@ function onProd() {
   b.style.cssText = `background:${col}22;border:1px solid ${col}55;color:${col}`;
   b.textContent = p.sz;
   selKey = null;
+  extraInstall = 0;
+  [0,1,2].forEach(i => { const b=document.getElementById('ei'+i); if(b) b.classList.toggle('on',i===0); });
   buildPriceGrids(p);
   buildDiscGrid(p);
   calc();
@@ -484,6 +520,33 @@ function setSellMode(mode) {
   calc();
 }
 
+function setEI(idx, amt) {
+  extraInstall = amt;
+  [0,1,2].forEach(i => document.getElementById('ei'+i).classList.toggle('on', i===idx));
+  calc();
+}
+
+function autoSuggestEI(qty) {
+  const wrap = document.getElementById('extraInstallWrap');
+  const p = getP();
+  const is600 = p.sz === '600';
+  wrap.style.display = is600 ? '' : 'none';
+  if(!is600) return;
+
+  document.getElementById('qtyHint').textContent = qty;
+  const el = document.getElementById('eiSuggest');
+  if(qty <= 40) {
+    el.textContent = '추가시공비 +20만원 권장';
+    el.style.color = '#ef4444';
+  } else if(qty <= 69) {
+    el.textContent = '추가시공비 +10만원 권장';
+    el.style.color = '#f59e0b';
+  } else {
+    el.textContent = '추가시공비 없음';
+    el.style.color = '#22c55e';
+  }
+}
+
 function chgQty(d) {
   const inp = document.getElementById('qtyInp');
   inp.value = Math.max(1,(+inp.value||1)+d);
@@ -493,6 +556,7 @@ function chgQty(d) {
 function calc() {
   const p   = getP();
   const qty = Math.max(1, +document.getElementById('qtyInp').value || 1);
+  autoSuggestEI(qty);
 
   // 매입원가: 공장공급가 × 1.1 (VAT 포함으로 통일)
   const buyUnit = Math.round(p.buy * 1.1);
@@ -536,7 +600,7 @@ function calc() {
   const totalSell  = sellUnit * qty;
   const totalBuy   = buyUnit  * qty;
   const totalDisc  = totalDiscUnit * qty;
-  const netSell    = totalSell - totalDisc;
+  const netSell    = totalSell - totalDisc - extraInstall;
   const margin     = netSell - totalBuy;
   const mRate      = netSell > 0 ? (margin/netSell)*100 : 0;
   const mc         = mcolor(mRate);
@@ -551,6 +615,18 @@ function calc() {
   document.getElementById('rSell').textContent    = fmt(totalSell)+'원';
   document.getElementById('rBuy').textContent     = fmt(totalBuy)+'원';
   document.getElementById('rDiscTotal').textContent = totalDisc>0?'−'+fmt(totalDisc)+'원':'0원';
+  // 추가시공비 행 동적 생성
+  let eiRow = document.getElementById('rExtraInstall');
+  if(!eiRow) {
+    eiRow = document.createElement('div');
+    eiRow.id = 'rExtraInstall';
+    eiRow.className = 'rrow';
+    document.getElementById('rDiscTotal').parentNode.insertBefore(eiRow, document.getElementById('rDiscTotal').nextSibling);
+  }
+  eiRow.style.display = extraInstall > 0 ? '' : 'none';
+  eiRow.innerHTML = extraInstall > 0
+    ? `<span class="lbl">↳ 추가시공비</span><span class="val" style="color:#fb923c;">−${fmt(extraInstall)}원</span>`
+    : '';
   document.getElementById('rMargin').textContent  = fmt(margin)+'원';
   document.getElementById('rMargin').style.color  = mc;
   document.getElementById('mrRate').textContent   = mRate.toFixed(1)+'%';
