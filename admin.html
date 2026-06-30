@@ -11,6 +11,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 .admin-header h1{color:#fff;font-size:20px;font-weight:700;}
 .admin-header span{color:#7eb8da;font-size:12px;}
 .container{max-width:600px;margin:0 auto;padding:16px;}
+
+/* 로그인 */
 .auth-box{background:#fff;border-radius:12px;padding:32px 24px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center;}
 .auth-box h2{font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:20px;}
 .auth-field{margin-bottom:14px;text-align:left;max-width:300px;margin-left:auto;margin-right:auto;}
@@ -18,21 +20,27 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 .auth-field input{width:100%;padding:12px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;text-align:center;outline:none;}
 .auth-field input:focus{border-color:#2563eb;}
 .auth-field .note{font-size:10px;color:#aaa;margin-top:4px;text-align:center;}
-.auth-field .saved-note{font-size:11px;color:#27ae60;margin-top:4px;text-align:center;}
 .auth-btn{width:100%;max-width:300px;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;}
 .pw-error{color:#e74c3c;font-size:13px;margin-top:12px;display:none;}
+
+/* 패널 */
 .panel{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-.panel-title{font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #f0f0f0;}
+.panel-title{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #eee;}
 .stat-row{display:flex;gap:12px;margin-bottom:16px;}
 .stat-card{flex:1;background:#f8f8f5;border-radius:10px;padding:14px;text-align:center;}
 .stat-num{font-size:28px;font-weight:800;color:#1a1a2e;}
 .stat-label{font-size:11px;color:#888;margin-top:2px;}
+
+/* 폼 */
 .add-form{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
 .add-form input{flex:1;min-width:0;padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;outline:none;}
 .add-form input:focus{border-color:#2563eb;}
 .add-form select{padding:10px;border:1.5px solid #ddd;border-radius:8px;font-size:13px;background:#fff;}
 .btn-add{width:100%;padding:12px;border-radius:8px;border:none;background:#27ae60;color:#fff;font-size:14px;font-weight:700;cursor:pointer;}
+.btn-add:active{filter:brightness(0.9);}
 .btn-danger{padding:8px 14px;border-radius:6px;border:none;background:#e74c3c;color:#fff;font-size:12px;font-weight:600;cursor:pointer;}
+
+/* 유저 리스트 */
 .user-item{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid #f0f0f0;gap:8px;}
 .user-item:last-child{border-bottom:none;}
 .user-email{font-size:13px;font-weight:600;color:#333;flex:1;word-break:break-all;}
@@ -44,6 +52,20 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 .status-msg{padding:10px;border-radius:8px;margin:8px 0;font-size:13px;text-align:center;}
 .status-success{background:#edfff4;color:#27ae60;}
 .status-error{background:#fdf0ef;color:#e74c3c;}
+
+/* 테이블 */
+.info-table{width:100%;border-collapse:collapse;font-size:12px;}
+.info-table td{padding:6px 8px;}
+.info-table tr:nth-child(even){background:#f8f8f5;}
+.info-table .label{color:#888;width:35%;}
+.info-table .value{font-weight:600;}
+.refund-table{width:100%;border-collapse:collapse;font-size:11px;}
+.refund-table th,.refund-table td{border:1px solid #e0e0e0;padding:8px;text-align:center;}
+.refund-table th{background:#f8f8f5;text-align:left;font-weight:600;color:#1a1a2e;}
+.refund-table .full{color:#2563eb;font-weight:600;}
+.refund-table .none{color:#e74c3c;}
+.refund-table .gray{color:#888;}
+
 .hidden{display:none!important;}
 .logout-area{text-align:center;margin-top:16px;}
 .logout-area span{color:#2563eb;font-size:12px;cursor:pointer;}
@@ -57,22 +79,26 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 </div>
 
 <div class="container">
+  <!-- 로그인 -->
   <div id="authSection" class="auth-box">
     <h2>🔐 관리자 인증</h2>
     <div class="auth-field">
-      <label>비밀번호</label>
-      <input type="password" id="pwInput" placeholder="••••••" inputmode="numeric" maxlength="10">
+      <label>관리번호</label>
+      <input type="password" id="pwInput" placeholder="관리번호 입력" inputmode="numeric" maxlength="10">
     </div>
     <div class="auth-field" id="tokenField">
       <label>GitHub Token</label>
       <input type="password" id="tokenInput" placeholder="토큰 붙여넣기">
-      <div class="note" id="tokenNote">구독자 관리에 필요 · 이 기기에 저장됩니다</div>
+      <div class="note">구독자 관리에 필요 · 이 기기에 저장됩니다</div>
     </div>
     <button class="auth-btn" onclick="adminLogin()">로그인</button>
     <div id="pwError" class="pw-error"></div>
   </div>
 
+  <!-- 대시보드 -->
   <div id="dashboard" class="hidden">
+
+    <!-- 현황 -->
     <div class="panel">
       <div class="panel-title">📊 현황</div>
       <div class="stat-row">
@@ -81,6 +107,8 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
         <div class="stat-card"><div class="stat-num" id="statPurchase">0</div><div class="stat-label">프로그램구입</div></div>
       </div>
     </div>
+
+    <!-- 구독자 추가 -->
     <div class="panel">
       <div class="panel-title">➕ 구독자 추가</div>
       <div class="add-form">
@@ -90,10 +118,49 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
       <button class="btn-add" onclick="addUser()">구독자 추가</button>
       <div id="addMsg"></div>
     </div>
+
+    <!-- 구독자 목록 -->
     <div class="panel">
       <div class="panel-title">👥 구독자 목록</div>
       <div id="userList"><div class="empty-msg">로딩 중...</div></div>
     </div>
+
+    <!-- 환불 정책 -->
+    <div class="panel">
+      <div class="panel-title">📋 환불 정책</div>
+      <table class="refund-table">
+        <tr><th>구분</th><th>조건</th><th>환불</th></tr>
+        <tr><td>월구독 7일내</td><td>미이용</td><td class="full">전액 환불</td></tr>
+        <tr><td>월구독 7일내</td><td>이용 시</td><td>일할 차감</td></tr>
+        <tr><td>월구독 7일후</td><td>해지 신청</td><td class="gray">당월 이용 후 해지</td></tr>
+        <tr><td>프로그램 7일내</td><td>미이용</td><td class="full">전액 환불</td></tr>
+        <tr><td>프로그램 7일내</td><td>이용 시</td><td>90% 환불</td></tr>
+        <tr><td>프로그램 7일후</td><td>-</td><td class="none">환불 불가</td></tr>
+      </table>
+    </div>
+
+    <!-- 사업자 정보 -->
+    <div class="panel">
+      <div class="panel-title">🏢 사업자 정보</div>
+      <table class="info-table">
+        <tr><td class="label">상호</td><td class="value">하스놀 주식회사</td></tr>
+        <tr><td class="label">대표</td><td class="value">김동현</td></tr>
+        <tr><td class="label">사업자등록번호</td><td class="value">728-87-03504</td></tr>
+        <tr><td class="label">소재지</td><td>경기도 김포시 양촌읍 해평로 94-148, 2동</td></tr>
+        <tr><td class="label">대표전화</td><td class="value">1660-1195</td></tr>
+        <tr><td class="label">이메일</td><td>kinpds@gmail.com</td></tr>
+      </table>
+    </div>
+
+    <!-- 요금제 -->
+    <div class="panel">
+      <div class="panel-title">💰 요금제</div>
+      <table class="info-table">
+        <tr><td class="label">월 구독</td><td class="value" style="color:#2563eb;">30,000원 / 월</td></tr>
+        <tr><td class="label">프로그램 구입</td><td><span style="text-decoration:line-through;color:#bbb;">1,000,000원</span> → <span class="value" style="color:#e74c3c;">500,000원 (50% OFF)</span></td></tr>
+      </table>
+    </div>
+
     <div class="logout-area"><span onclick="adminLogout()">← 로그아웃</span></div>
   </div>
 </div>
@@ -101,18 +168,16 @@ body{font-family:'Pretendard',-apple-system,sans-serif;background:#f5f5f0;min-he
 <script>
 var REPO = 'kinpds-max/matcel';
 var FILE_PATH = 'users.json';
-var ADMIN_PW = '471500';
 var TK_KEY = 'matcel_tk';
 var ghToken = '';
 var usersData = null;
 var fileSha = '';
 
-/* 저장된 토큰 있으면 자동 채움 */
 (function() {
   var saved = localStorage.getItem(TK_KEY);
   if (saved) {
     document.getElementById('tokenInput').value = saved;
-    document.getElementById('tokenNote').innerHTML = '<span class="saved-note">✅ 저장된 토큰이 있습니다</span>';
+    document.getElementById('tokenField').querySelector('.note').innerHTML = '<span style="color:#27ae60;">✅ 저장된 토큰이 있습니다</span>';
   }
 })();
 
@@ -122,7 +187,7 @@ document.getElementById('tokenInput').addEventListener('keydown', function(e) { 
 function adminLogin() {
   var pw = document.getElementById('pwInput').value.trim();
   var errEl = document.getElementById('pwError');
-  if (pw !== '471500' && pw !== '10041004') { errEl.textContent = '비밀번호가 틀립니다.'; errEl.style.display = 'block'; return; }
+  if (pw !== '471500' && pw !== '10041004') { errEl.textContent = '관리번호가 틀립니다.'; errEl.style.display = 'block'; return; }
 
   var tk = document.getElementById('tokenInput').value.trim();
   if (!tk) { errEl.textContent = 'GitHub Token을 입력해주세요.'; errEl.style.display = 'block'; return; }
@@ -153,10 +218,7 @@ async function getFileSha() {
   var res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + FILE_PATH, {
     headers: { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.v3+json' }
   });
-  if (!res.ok) {
-    localStorage.removeItem(TK_KEY);
-    throw new Error('토큰이 만료되었습니다. 로그아웃 후 새 토큰으로 다시 로그인해주세요.');
-  }
+  if (!res.ok) { localStorage.removeItem(TK_KEY); throw new Error('토큰이 만료되었습니다. 로그아웃 후 새 토큰으로 다시 로그인해주세요.'); }
   fileSha = (await res.json()).sha;
 }
 
