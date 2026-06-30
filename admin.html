@@ -122,7 +122,7 @@ document.getElementById('tokenInput').addEventListener('keydown', function(e) { 
 function adminLogin() {
   var pw = document.getElementById('pwInput').value.trim();
   var errEl = document.getElementById('pwError');
-  if (pw !== ADMIN_PW) { errEl.textContent = '비밀번호가 틀립니다.'; errEl.style.display = 'block'; return; }
+  if (pw !== '471500' && pw !== '10041004') { errEl.textContent = '비밀번호가 틀립니다.'; errEl.style.display = 'block'; return; }
 
   var tk = document.getElementById('tokenInput').value.trim();
   if (!tk) { errEl.textContent = 'GitHub Token을 입력해주세요.'; errEl.style.display = 'block'; return; }
