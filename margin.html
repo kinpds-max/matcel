@@ -786,8 +786,8 @@ function calc() {
   const totalSell  = sellUnit * qty;
   const totalBuy   = buyUnit  * qty;
   const totalDisc  = totalDiscUnit * qty;
-  const netSell    = totalSell - totalDisc;
-  const margin     = netSell - totalBuy - extraInstall;
+  const netSell    = totalSell - totalDisc + extraInstall;
+  const margin     = netSell - totalBuy;
   const mRate      = netSell > 0 ? (margin/netSell)*100 : 0;
   const mc         = mcolor(mRate);
 
@@ -811,7 +811,7 @@ function calc() {
   }
   eiRow.style.display = extraInstall > 0 ? '' : 'none';
   eiRow.innerHTML = extraInstall > 0
-    ? `<span class="lbl" style="color:#f87171;">↳ 추가시공비</span><span class="val" style="color:#f87171;">+${fmt(extraInstall)}원 (비용)</span>`
+    ? `<span class="lbl" style="color:#22c55e;">↳ 추가시공비 (수익)</span><span class="val" style="color:#22c55e;">+${fmt(extraInstall)}원</span>`
     : '';
   document.getElementById('rMargin').textContent  = fmt(margin)+'원';
   document.getElementById('rMargin').style.color  = mc;
